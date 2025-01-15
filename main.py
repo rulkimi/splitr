@@ -23,68 +23,95 @@ async def split_bills(file, split_evenly, num_people, remarks):
 
     # Create the common part of the prompt
     common_prompt = f"""
-      You are an expert in document analysis, specializing in extracting information from bills and receipts. 
-      Please analyze the attached image of a bill and extract the following details in JSON format: 
-      {{
-        "restaurant_name": "...",
-        "date": "...",
-        "items": [
-          {{
-            "name": "...",
-            "amount": "...",
-            "price": "..."
-          }}
-        ],
-        "subtotal": "...",
-        "tax": "...",
-        "total": "..."
-      }}
-      If any information is unavailable, use null for its value.
+    You are an expert in document analysis, specializing in extracting key details from bills and receipts. 
+    Please analyze the attached image of a bill and extract the following details in JSON format:
+    {{
+        "result": {{
+            "restaurant_name": "name_of_the_restaurant",  # Extract the name of the restaurant or vendor
+            "date": "date_of_purchase",  # Extract the date of the bill
+            "items": [  # List of items purchased
+                {{
+                    "name": "item_name",  # Name of the item
+                    "amount": "total_amount_for_item",  # Total amount for the item For example 1, 2, 3, etc
+                    "price": "unit_price"  # Price per unit/item
+                }},
+                ...
+            ],
+            "subtotal": "subtotal_amount",  # Extract the subtotal of the bill
+            "tax": "tax_amount",  # Extract the tax amount
+            "total": "total_amount"  # Extract the total amount (including tax)
+        }}
+    }}
 
-      Additional remarks:
-      {remarks if remarks else "None"}
+    If any of this information is missing, use "null" for those fields.
+
+    Additional remarks: {remarks if remarks else "None"}
     """
 
-    # Modify prompt based on the split_evenly flag
+    # Instructions for splitting the bill
     if split_evenly:
         split_prompt = f"""
-        Please split the total bill of {num_people} people evenly. Provide the share for each person, ensuring the total amount is equally divided.
-        The final output should contain a list of people's shares, like so:
+        IMPORTANT! If the items are not explicitly assigned to specific people in the additional remarks section, add them to the "unassigned_items" section:
         {{
-          "people_share": [
-            {{
-              "name": "PERSON 1",
-              "total": "share_amount"
-            }},
-            ...
-          ]
+            "unassigned_items": [  # List of items that are unassigned
+                {{
+                    "name": "item_name",  # Name of the unassigned item
+                    "amount": "amount",  # Total amount for the unassigned item, for example 1, 2, 3, etc
+                    "price": "unit_price"  # Price of the unassigned item
+                }},
+                ...
+            ]
+        }}
+
+        Since the "split_evenly" flag is {str(split_evenly).lower()}, divide the total amount equally among {num_people} people and show their share like this:
+        {{
+            "people_share": [
+                {{
+                    "name": "PERSON_1",  # Name of the first person
+                    "total": "share_amount_1"  # Share of the first person (equal share)
+                }},
+                ...
+            ]
         }}
         """
     else:
         split_prompt = f"""
-        Please split the bill among {num_people} people based on the items. Assign each item to a person, and if any items remain unassigned, distribute them equally.
-        The final output should contain the items assigned to each person along with their share of the total amount, add this item to the response object.
+        IMPORTANT! If the items are not explicitly assigned to specific people in the additional remarks section, add them to the "unassigned_items" section:
         {{
-          "people_share": [
-            {{
-              "name": "PERSON 1",
-              "items": [
+            "unassigned_items": [  # List of items that are unassigned
                 {{
-                  "name": "item_name",
-                  "amount": "amount",
-                  "price": "price"
+                    "name": "item_name",  # Name of the unassigned item
+                    "amount": "amount",  # Total amount for the unassigned item, for example 1, 2, 3, etc
+                    "price": "unit_price"  # Price of the unassigned item
                 }},
                 ...
-              ],
-              "total": "share_amount"
-            }},
-            ...
-          ]
+            ]
+        }}
+
+        Since the "split_evenly" flag is {str(split_evenly).lower()}, assign items to individuals based on the total amount. If there are any unassigned items, leave it blank. The output should show each person's items and their share of the total, like this:
+        {{
+            "people_share": [
+                {{
+                    "name": "PERSON_1",  # Name of the first person
+                    "items": [  # List of items assigned to this person
+                        {{
+                            "name": "item_name",  # Name of the item
+                            "amount": "item_amount",  # Total amount of this item
+                            "price": "item_price"  # Price of this item
+                        }},
+                        ...
+                    ],
+                    "total": "share_amount_1"  # The total share for this person
+                }},
+                ...
+            ]
         }}
         """
-    
-    # Combine common part with specific split instructions
+
+    # Combine the common prompt and split-specific instructions
     final_prompt = common_prompt + split_prompt
+
+    print(final_prompt)
 
     # Send the prompt and image to the model
     identification_response = model.generate_content([final_prompt, image])
@@ -97,10 +124,6 @@ async def split_bills(file, split_evenly, num_people, remarks):
     # Return the full response with bill details and people's share
     return bill_details
 
-# Example usage with FastAPI:
-#
-# from fastapi import FastAPI, File, UploadFile
-#
 app = FastAPI()
 
 @app.post("/upload/")
