@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button"
+import BillDetails from "@/components/bill-details";
+import BaseLayout from "@/layouts";
 
 export default function Home() {
   return (
-    <div>
-      <Button>Click me</Button>
-    </div>
-  )
+    <BaseLayout>
+      <BillDetails />
+    </BaseLayout>
+  );
 }
