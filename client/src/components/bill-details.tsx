@@ -12,10 +12,6 @@ import {
 import { useEffect, useState } from "react";
 
 const BillDetails = () => {
-  // useEffect(() => {
-  //   fetch('http://localhost:8000/upload/')
-  // }, []);
-
   return (
     <Card>
       <CardHeader>

@@ -126,6 +126,16 @@ async def split_bills(file, split_evenly, num_people, remarks):
 
 app = FastAPI()
 
+origins = ["http://localhost:5173", "https://rulkimi.github.io"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/upload/")
 async def upload_bill(file: UploadFile = File(...), split_evenly: bool = True, num_people: int = 0, remarks: str = ""):
     try:
