@@ -3,27 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, ChangeEvent } from "react";
 import { Button } from "./ui/button";
 
-const UploadReceipt = () => {
-  const [file, setFile] = useState<File | null>(null);
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] || null)
-  }
-
-  const getSplitBill = async () => {
-    if (!file) return;
-    const formData = new FormData()
-    formData.append("file", file);
-
-    const response = await fetch('http://localhost:8000/upload/', {
-      method: 'POST',
-      body: formData
-    });
-
-    const responseData = await response.json()
-    console.log(responseData)
-  }
-
+const UploadReceipt = ({ onUploadImage, onSplitBill}) => {
   return (
     <Card>
       <CardHeader>
@@ -39,9 +19,9 @@ const UploadReceipt = () => {
         <Input
           id="receipt-image"
           type="file"
-          onChange={handleFileChange}
+          onChange={onUploadImage}
         />
-        <Button onClick={getSplitBill}>
+        <Button onClick={onSplitBill}>
           Upload
         </Button>
       </CardContent>
