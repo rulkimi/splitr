@@ -33,7 +33,7 @@ export default function Home() {
 
     const responseData = await response.json();
     setLoading(false);
-    setReceipt(responseData.result);
+    setReceipt(responseData);
   };
 
   return (

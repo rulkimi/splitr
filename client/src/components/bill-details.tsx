@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 const BillDetails = ({ receipt }: { receipt: Receipt }) => {
   return (
@@ -21,7 +21,9 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
           </div>
           <div className="text-right">
             <p className="text-lg font-semibold">Total: RM {receipt.total}</p>
-            <p className="text-sm text-muted-foreground">Tax: RM {receipt.tax}</p>
+            <p className="text-sm text-muted-foreground">
+              Tax: RM {receipt.tax}
+            </p>
           </div>
         </div>
       </CardHeader>
@@ -30,7 +32,7 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
         <ItemsPurchased receipt={receipt} />
       </CardContent>
     </Card>
-  )
+  );
 };
 
 // const items = [
@@ -41,17 +43,17 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
 // ]
 
 interface Item {
-  name: string
-  amount: string
-  price: string
+  name: string;
+  amount: string;
+  price: string;
 }
 
 interface Receipt {
-  total: string
-  restaurant_name: string
-  date: string
-  tax: string
-  items: Item[]
+  total: string;
+  restaurant_name: string;
+  date: string;
+  tax: string;
+  items: Item[];
 }
 
 const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
@@ -81,7 +83,7 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
         </TableRow>
       </TableFooter>
     </Table>
-  )
-}
+  );
+};
 
 export default BillDetails;

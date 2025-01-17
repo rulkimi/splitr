@@ -17,7 +17,11 @@ interface UploadReceiptProps {
   loading: boolean;
 }
 
-const UploadReceipt = ({ onUploadImage, onSplitBill, loading }: UploadReceiptProps) => {
+const UploadReceipt = ({
+  onUploadImage,
+  onSplitBill,
+  loading,
+}: UploadReceiptProps) => {
   const [numPeople, setNumPeople] = useState<string>("");
   const [remarks, setRemarks] = useState<string>("");
   const [splitEvenly, setSplitEvenly] = useState<boolean>(false);
@@ -38,7 +42,10 @@ const UploadReceipt = ({ onUploadImage, onSplitBill, loading }: UploadReceiptPro
 
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="receipt-image" className="flex items-center space-x-2">
+          <Label
+            htmlFor="receipt-image"
+            className="flex items-center space-x-2"
+          >
             <Image className="w-4 h-4" />
             <span>Receipt Image</span>
           </Label>
