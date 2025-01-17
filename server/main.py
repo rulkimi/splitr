@@ -137,7 +137,7 @@ app.add_middleware(
 )
 
 @app.post("/upload/")
-async def upload_bill(file: UploadFile = File(...), split_evenly: bool = True, num_people: int = 0, remarks: str = ""):
+async def upload_bill(file: UploadFile = File(...), split_evenly: bool = False, num_people = "0", remarks: str = ""):
     try:
         bill_details = await split_bills(file, split_evenly, num_people, remarks)
         return bill_details

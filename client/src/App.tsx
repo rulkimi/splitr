@@ -12,13 +12,13 @@ export default function Home() {
     setFile(e.target.files?.[0] || null)
   }
 
-  const getSplitBill = async () => {
+  const getSplitBill = async (numPeople: string | undefined, remarks: string | undefined) => {
     if (!file) return;
     const formData = new FormData()
     formData.append("file", file);
 
     setLoading(true);
-    const response = await fetch('http://localhost:8000/upload/', {
+    const response = await fetch(`http://localhost:8000/upload/?num_people=${numPeople}&remarks=${remarks}`, {
       method: 'POST',
       body: formData
     });
