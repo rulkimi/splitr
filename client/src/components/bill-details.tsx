@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react";
 
 const BillDetails = ({ receipt }: { receipt: Receipt }) => {
   return (
