@@ -5,42 +5,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useDrag } from "react-dnd";
 
 interface PersonShare {
+  person_id: string
   name: string;
-  items: { id: string; name: string; price: number }[];
-  total: number;
+  assigned_items: ItemProps[];
+  share_amount: number;
 }
-
-const initialData: PersonShare[] = [
-  {
-    name: "sarah",
-    items: [{ id: "1", name: "Chili Pan Mee", price: 12.9 }],
-    total: 12.9,
-  },
-  {
-    name: "john",
-    items: [
-      { id: "2", name: "Watermelon Juice", price: 5.4 },
-      { id: "3", name: "Fish & Chips", price: 17.9 },
-    ],
-    total: 23.3,
-  },
-  {
-    name: "person3",
-    items: [
-      { id: "4", name: "Pineapple Fried Rice", price: 12.9 },
-      { id: "5", name: "Creamy Buttermilk Chicken Rice", price: 13.5 },
-    ],
-    total: 26.4,
-  },
-  {
-    name: "person4",
-    items: [
-      { id: "6", name: "Tom Yam Fried Beehoon", price: 12.9 },
-      { id: "7", name: "Salted Egg Chicken Rice", price: 14.5 },
-    ],
-    total: 27.4,
-  },
-];
 
 const PersonList: React.FC<{
   person: PersonShare;
@@ -49,7 +18,7 @@ const PersonList: React.FC<{
 }> = ({ person, index: personIndex, moveItem }) => {
   const [, drop] = useDrop({
     accept: "item",
-    drop: (item: { id: string; name: string; price: number }) => {
+    drop: (item: ItemProps) => {
       moveItem(personIndex, -1, item);
     },
   });
@@ -57,51 +26,51 @@ const PersonList: React.FC<{
   return (
     <div ref={drop} className="p-4 border rounded-md mb-4">
       <h4 className="font-semibold">
-        {person.name} - Total: ${person.total.toFixed(2)}
+        {person.name} - Total: ${person.share_amount.toFixed(2)}
       </h4>
       <ul>
-        {person.items.map((item) => (
-          <Item key={item.id} {...item} />
+        {person.assigned_items.map((item) => (
+          <Item key={item.item_id} {...item} />
         ))}
       </ul>
     </div>
   );
 };
 
-export const PeopleShare: React.FC = () => {
-  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(initialData);
+export const PeopleShare: React.FC = ({ shares }) => {
+  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(shares);
 
   const moveItem = (
     targetPersonIndex: number,
     targetItemIndex: number,
-    item: { id: string; name: string; price: number }
+    item: ItemProps
   ) => {
     setPeopleShare((prevPeopleShare) => {
       const newPeopleShare = [...prevPeopleShare];
       const sourcePersonIndex = newPeopleShare.findIndex((person) =>
-        person.items.some((i) => i.id === item.id)
+        person.assigned_items.some((i) => i.item_id === item.item_id)
       );
 
       if (sourcePersonIndex !== -1) {
         const sourcePerson = newPeopleShare[sourcePersonIndex];
-        const sourceItemIndex = sourcePerson.items.findIndex(
-          (i) => i.id === item.id
+        const sourceItemIndex = sourcePerson.assigned_items.findIndex(
+          (i) => i.item_id === item.item_id
         );
-        sourcePerson.items.splice(sourceItemIndex, 1);
-        sourcePerson.total = sourcePerson.items.reduce(
-          (sum, i) => sum + i.price,
+        sourcePerson.assigned_items.splice(sourceItemIndex, 1);
+        sourcePerson.share_amount = sourcePerson.assigned_items.reduce(
+          (sum, i) => sum + i.total_price,
           0
         );
       }
 
       const targetPerson = newPeopleShare[targetPersonIndex];
       if (targetItemIndex === -1) {
-        targetPerson.items.push(item);
+        targetPerson.assigned_items.push(item);
       } else {
-        targetPerson.items.splice(targetItemIndex, 0, item);
+        targetPerson.assigned_items.splice(targetItemIndex, 0, item);
       }
-      targetPerson.total = targetPerson.items.reduce(
-        (sum, i) => sum + i.price,
+      targetPerson.share_amount = targetPerson.assigned_items.reduce(
+        (sum, i) => sum + i.total_price,
         0
       );
 
@@ -131,15 +100,16 @@ export const PeopleShare: React.FC = () => {
 };
 
 interface ItemProps {
-  id: string;
+  item_id: string;
   name: string;
-  price: number;
+  quantity: number;
+  total_price: number;
 }
 
-export const Item: React.FC<ItemProps> = ({ id, name, price }) => {
+export const Item: React.FC<ItemProps> = ({ item_id, name, total_price }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "item",
-    item: { id, name, price },
+    item: { item_id, name, total_price },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -153,7 +123,7 @@ export const Item: React.FC<ItemProps> = ({ id, name, price }) => {
       }`}
     >
       <span>{name}</span>
-      <span>${price.toFixed(2)}</span>
+      <span>${total_price.toFixed(2)}</span>
     </li>
   );
 };

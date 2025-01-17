@@ -41,7 +41,7 @@ export default function Home() {
       {receipt ? (
         <div className="space-y-4">
           <BillDetails receipt={receipt} />
-          <PeopleShare />
+          <PeopleShare shares={receipt.split_details.shares} />
         </div>
       ) : (
         <UploadReceipt

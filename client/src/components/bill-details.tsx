@@ -44,8 +44,8 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
 
 interface Item {
   name: string;
-  amount: string;
-  price: string;
+  quantity: number;
+  total_price: string;
 }
 
 interface Receipt {
@@ -71,15 +71,15 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
         {receipt.items.map((item, index) => (
           <TableRow key={index}>
             <TableCell>{item.name}</TableCell>
-            <TableCell>{item.amount}</TableCell>
-            <TableCell className="text-right">{item.price}</TableCell>
+            <TableCell>{item.quantity}</TableCell>
+            <TableCell className="text-right">{item.total_price}</TableCell>
           </TableRow>
         ))}
       </TableBody>
       <TableFooter>
         <TableRow>
           <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right">RM {receipt.total}</TableCell>
+          <TableCell className="text-right">RM {receipt.financial_summary.total}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>
