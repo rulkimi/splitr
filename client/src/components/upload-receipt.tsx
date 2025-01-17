@@ -2,13 +2,15 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { ChangeEvent } from "react";
+import { Loader2 } from "lucide-react";
 
 interface UploadReceiptProps {
   onUploadImage: (e: ChangeEvent<HTMLInputElement>) => void
   onSplitBill: () => void
+  loading: boolean
 }
 
-const UploadReceipt = ({ onUploadImage, onSplitBill}: UploadReceiptProps) => {
+const UploadReceipt = ({ onUploadImage, onSplitBill, loading}: UploadReceiptProps) => {
   return (
     <Card>
       <CardHeader>
@@ -20,13 +22,14 @@ const UploadReceipt = ({ onUploadImage, onSplitBill}: UploadReceiptProps) => {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="flex space-x-2">
         <Input
           id="receipt-image"
           type="file"
           onChange={onUploadImage}
         />
-        <Button onClick={onSplitBill}>
+        <Button onClick={onSplitBill} disabled={loading}>
+          {loading && <Loader2 className="animate-spin" />}
           Upload
         </Button>
       </CardContent>
