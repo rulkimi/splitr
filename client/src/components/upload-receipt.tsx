@@ -23,7 +23,7 @@ const UploadReceipt = ({ onUploadImage, onSplitBill, loading }: UploadReceiptPro
   const [splitEvenly, setSplitEvenly] = useState<boolean>(false);
 
   return (
-    <Card className="max-w-md mx-auto shadow-lg">
+    <Card>
       <CardHeader>
         <div>
           <h3 className="text-lg font-semibold flex items-center space-x-2">

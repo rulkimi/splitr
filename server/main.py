@@ -88,7 +88,7 @@ async def split_bills(file, split_evenly, num_people, remarks):
             ]
         }}
 
-        Since the "split_evenly" flag is {str(split_evenly).lower()}, assign items to individuals based on the total amount. If there are any unassigned items, leave it blank. The output should show each person's items and their share of the total, like this:
+        Since the "split_evenly" flag is {str(split_evenly).lower()}, assign items to {num_people} individuals based on the total amount. If there are any unassigned items, leave it blank. The output should show each person's items and their share of the total, like this:
         {{
             "people_share": [
                 {{
