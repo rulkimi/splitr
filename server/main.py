@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 import io
 import json
+import uuid
+from typing import Optional
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,136 +12,156 @@ from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
 def configure_model():
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-    return genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
-        generation_config={"response_mime_type": "application/json"},
-    )
+	genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+	return genai.GenerativeModel(
+		model_name="gemini-1.5-flash",
+		generation_config={
+			"response_mime_type": "application/json",
+			"temperature": 0.1,
+			"top_p": 0.8,
+		},
+	)
 
-async def split_bills(file, split_evenly, num_people, remarks):
-    image = Image.open(io.BytesIO(await file.read()))
+def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optional[str]) -> str:
+	base_prompt = """Extract the receipt information and split details in this exact JSON format:
+	{
+		"receipt_id": string,
+		"metadata": {
+			"restaurant_name": string,
+			"date": string,
+			"time": string | null,
+			"receipt_number": string | null
+		},
+		"items": [
+			{
+				"item_id": string,
+				"name": string,
+				"quantity": number,
+				"unit_price": number,
+				"total_price": number
+			}
+		],
+		"financial_summary": {
+			"subtotal": number,
+			"tax": number | null,
+			"total": number
+		}"""
 
-    model = configure_model()
+	if split_evenly:
+		split_details = f"""
+		"split_details": {{
+			"type": "equal",
+			"num_people": {num_people},
+			"unassigned_items": [
+				{{
+					"item_id": string,
+					"name": string,
+					"quantity": number,
+					"total_price": number
+				}}
+			],
+			"shares": [
+				{{
+					"person_id": string,
+					"name": string,
+					"share_amount": number
+				}}
+			]
+		}}"""
+	else:
+		split_details = f"""
+		"split_details": {{
+			"type": "custom",
+			"num_people": {num_people},
+			"unassigned_items": [
+				{{
+					"item_id": string,
+					"name": string,
+					"quantity": number,
+					"total_price": number
+				}}
+			],
+			"shares": [
+				{{
+					"person_id": string,
+					"name": string,
+					"assigned_items": [
+						{{
+							"item_id": string,
+							"name": string,
+							"quantity": number,
+							"total_price": number
+						}}
+					],
+					"share_amount": number
+				}}
+			]
+		}}"""
 
-    # Create the common part of the prompt
-    common_prompt = f"""
-    You are an expert in document analysis, specializing in extracting key details from bills and receipts. 
-    Please analyze the attached image of a bill and extract the following details in JSON format:
-    {{
-        "result": {{
-            "restaurant_name": "name_of_the_restaurant",  # Extract the name of the restaurant or vendor
-            "date": "date_of_purchase",  # Extract the date of the bill
-            "items": [  # List of items purchased
-                {{
-                    "name": "item_name",  # Name of the item
-                    "amount": "total_amount_for_item",  # Total amount for the item For example 1, 2, 3, etc
-                    "price": "unit_price"  # Price per unit/item
-                }},
-                ...
-            ],
-            "subtotal": "subtotal_amount",  # Extract the subtotal of the bill
-            "tax": "tax_amount",  # Extract the tax amount
-            "total": "total_amount"  # Extract the total amount (including tax)
-        }}
-    }}
+	assignment_rules = f"""
+	}}
 
-    If any of this information is missing, use "null" for those fields.
+	Rules:
+	1. Put all items in unassigned_items by default
+	2. Only move items to assigned_items if explicitly mentioned in: {remarks if remarks else 'No remarks provided'}
+	3. Match item names case-insensitive
+	4. Generate unique IDs for all entities
+	5. Round all monetary values to 2 decimal places"""
 
-    Additional remarks: {remarks if remarks else "None"}
-    """
+	return base_prompt + split_details + assignment_rules
 
-    # Instructions for splitting the bill
-    if split_evenly:
-        split_prompt = f"""
-        IMPORTANT! If the items are not explicitly assigned to specific people in the additional remarks section, add them to the "unassigned_items" section:
-        {{
-            "unassigned_items": [  # List of items that are unassigned
-                {{
-                    "name": "item_name",  # Name of the unassigned item
-                    "amount": "amount",  # Total amount for the unassigned item, for example 1, 2, 3, etc
-                    "price": "unit_price"  # Price of the unassigned item
-                }},
-                ...
-            ]
-        }}
+async def analyze_receipt(file: UploadFile, split_evenly: bool, num_people: int, remarks: Optional[str]):
+	try:
+		image_data = await file.read()
+		image = Image.open(io.BytesIO(image_data))
+		
+		model = configure_model()
+		prompt = create_analysis_prompt(split_evenly, num_people, remarks)
+		
+		response = model.generate_content([prompt, image])
+		
+		try:
+			response_text = response.text.strip()
+			# remove any markdown code block indicators if present
+			if response_text.startswith('```json\n'):
+				response_text = response_text[7:-3]
+			elif response_text.startswith('```\n'):
+				response_text = response_text[4:-3]
+			
+			result = json.loads(response_text)
+			if not all(key in result for key in ["receipt_id", "metadata", "items", "split_details"]):
+				raise ValueError("Missing required fields in response")
+			return result
+		except json.JSONDecodeError as e:
+			print(f"JSON Parse Error: {str(e)}")
+			print(f"Response Text: {response.text}")
+			raise HTTPException(status_code=422, detail="Failed to parse model response")
+			
+	except Exception as e:
+		print(f"Error: {str(e)}")
+		raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
-        Since the "split_evenly" flag is {str(split_evenly).lower()}, divide the total amount equally among {num_people} people and show their share like this:
-        {{
-            "people_share": [
-                {{
-                    "name": "PERSON_1",  # Name of the first person
-                    "total": "share_amount_1"  # Share of the first person (equal share)
-                }},
-                ...
-            ]
-        }}
-        """
-    else:
-        split_prompt = f"""
-        IMPORTANT! If the items are not explicitly assigned to specific people in the additional remarks section, add them to the "unassigned_items" section:
-        {{
-            "unassigned_items": [  # List of items that are unassigned
-                {{
-                    "name": "item_name",  # Name of the unassigned item
-                    "amount": "amount",  # Total amount for the unassigned item, for example 1, 2, 3, etc
-                    "price": "unit_price"  # Price of the unassigned item
-                }},
-                ...
-            ]
-        }}
-
-        Since the "split_evenly" flag is {str(split_evenly).lower()}, assign items to {num_people} individuals based on the total amount. If there are any unassigned items, leave it blank. The output should show each person's items and their share of the total, like this:
-        {{
-            "people_share": [
-                {{
-                    "name": "PERSON_1",  # Name of the first person
-                    "items": [  # List of items assigned to this person
-                        {{
-                            "name": "item_name",  # Name of the item
-                            "amount": "item_amount",  # Total amount of this item
-                            "price": "item_price"  # Price of this item
-                        }},
-                        ...
-                    ],
-                    "total": "share_amount_1"  # The total share for this person
-                }},
-                ...
-            ]
-        }}
-        """
-
-    # Combine the common prompt and split-specific instructions
-    final_prompt = common_prompt + split_prompt
-
-    print(final_prompt)
-
-    # Send the prompt and image to the model
-    identification_response = model.generate_content([final_prompt, image])
-    
-    try:
-        bill_details = json.loads(identification_response.text)
-    except json.JSONDecodeError:
-        return {"error": "Failed to parse the response. Ensure the input image is a valid bill."}
-
-    # Return the full response with bill details and people's share
-    return bill_details
-
-app = FastAPI()
-
-origins = ["http://localhost:5173", "https://rulkimi.github.io"]
+app = FastAPI(title="Receipt Analysis API")
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+	CORSMiddleware,
+	allow_origins=["http://localhost:5173", "https://rulkimi.github.io"],
+	allow_credentials=True,
+	allow_methods=["*"],
+	allow_headers=["*"],
 )
 
-@app.post("/upload/")
-async def upload_bill(file: UploadFile = File(...), split_evenly: bool = False, num_people = "0", remarks: str = ""):
-    try:
-        bill_details = await split_bills(file, split_evenly, num_people, remarks)
-        return bill_details
-    except Exception as e:
-        return {"error": str(e)}
+@app.post("/analyze/")
+async def analyze_receipt_endpoint(
+	file: UploadFile = File(...),
+	split_evenly: bool = False,
+	num_people: int = 1,
+	remarks: Optional[str] = None
+):
+	if not file.content_type.startswith('image/'):
+		raise HTTPException(status_code=400, detail="File must be an image")
+	
+	if num_people < 1:
+		raise HTTPException(status_code=400, detail="Number of people must be at least 1")
+		
+	return await analyze_receipt(file, split_evenly, num_people, remarks)

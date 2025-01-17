@@ -24,7 +24,7 @@ export default function Home() {
 
     setLoading(true);
     const response = await fetch(
-      `http://localhost:8000/upload/?num_people=${numPeople}&split_evenly=${splitEvenly}&remarks=${remarks}`,
+      `http://localhost:8000/analyze/?num_people=${numPeople}&split_evenly=${splitEvenly}&remarks=${remarks}`,
       {
         method: "POST",
         body: formData,
