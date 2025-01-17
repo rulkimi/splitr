@@ -1,9 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, ChangeEvent } from "react";
 import { Button } from "./ui/button";
+import { ChangeEvent } from "react";
 
-const UploadReceipt = ({ onUploadImage, onSplitBill}) => {
+interface UploadReceiptProps {
+  onUploadImage: (e: ChangeEvent<HTMLInputElement>) => void
+  onSplitBill: () => void
+}
+
+const UploadReceipt = ({ onUploadImage, onSplitBill}: UploadReceiptProps) => {
   return (
     <Card>
       <CardHeader>

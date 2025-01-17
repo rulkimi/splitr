@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <BaseLayout>
       <UploadReceipt onSplitBill={getSplitBill} onUploadImage={handleFileChange} />
-      <BillDetails receipt={receipt} />
+      {receipt && <BillDetails receipt={receipt} />}
     </BaseLayout>
   );
 }

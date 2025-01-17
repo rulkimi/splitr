@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table"
 import { useEffect, useState } from "react";
 
-const BillDetails = ({ receipt }) => {
+const BillDetails = ({ receipt }: { receipt: Receipt }) => {
   return (
     <Card>
       <CardHeader>
@@ -28,7 +28,7 @@ const BillDetails = ({ receipt }) => {
       </CardHeader>
 
       <CardContent>
-        {receipt && <ItemsPurchased receipt={receipt} />}
+        <ItemsPurchased receipt={receipt} />
       </CardContent>
     </Card>
   )
@@ -41,7 +41,21 @@ const BillDetails = ({ receipt }) => {
 //   { name: "Tiramisu", amount: "2", price: "16.00" },
 // ]
 
-const ItemsPurchased = ({ receipt }) => {
+interface Item {
+  name: string
+  amount: string
+  price: string
+}
+
+interface Receipt {
+  total: string
+  restaurant_name: string
+  date: string
+  tax: string
+  items: Item[]
+}
+
+const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
   return (
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
