@@ -3,6 +3,7 @@ import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useDrag } from "react-dnd";
+import { type Item as ItemProps, type Receipt } from "@/App";
 
 interface PersonShare {
   person_id: string
@@ -37,8 +38,8 @@ const PersonList: React.FC<{
   );
 };
 
-export const PeopleShare: React.FC = ({ shares }) => {
-  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(shares);
+export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
+  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(receipt.split_details.shares);
 
   const moveItem = (
     targetPersonIndex: number,
@@ -98,13 +99,6 @@ export const PeopleShare: React.FC = ({ shares }) => {
     </DndProvider>
   );
 };
-
-interface ItemProps {
-  item_id: string;
-  name: string;
-  quantity: number;
-  total_price: number;
-}
 
 export const Item: React.FC<ItemProps> = ({ item_id, name, total_price }) => {
   const [{ isDragging }, drag] = useDrag(() => ({

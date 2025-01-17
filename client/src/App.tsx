@@ -4,9 +4,44 @@ import UploadReceipt from "@/components/upload-receipt";
 import PeopleShare from "@/components/people-share";
 import { useState, ChangeEvent } from "react";
 
+export interface Item {
+  item_id: string;
+  name: string;
+  quantity: number;
+  unit_price?: number;
+  total_price: number;
+}
+
+export interface Receipt {
+  receipt_id: string;
+  metadata: {
+    restaurant_name: string
+    date: string
+    time: string
+    receipt_number: string
+  }
+  items: Item[]
+  financial_summary: {
+    subtotal: number
+    tax: number
+    total: number
+  }
+  split_details: {
+    type: string
+    num_people: number
+    unassigned_items: Item[]
+    shares: {
+      person_id: string
+      name: string
+      assigned_items: Item[]
+      share_amount: number
+    }[]
+  }
+}
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  const [receipt, setReceipt] = useState();
+  const [receipt, setReceipt] = useState<Receipt>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +76,7 @@ export default function Home() {
       {receipt ? (
         <div className="space-y-4">
           <BillDetails receipt={receipt} />
-          <PeopleShare shares={receipt.split_details.shares} />
+          <PeopleShare receipt={receipt} />
         </div>
       ) : (
         <UploadReceipt

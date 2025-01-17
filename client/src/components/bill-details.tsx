@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { type Receipt } from "@/App";
 
 const BillDetails = ({ receipt }: { receipt: Receipt }) => {
   return (
@@ -16,13 +17,13 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
       <CardHeader>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <h3 className="text-lg font-semibold">{receipt.restaurant_name}</h3>
-            <p className="text-sm text-muted-foreground">{receipt.date}</p>
+            <h3 className="text-lg font-semibold">{receipt.metadata.restaurant_name}</h3>
+            <p className="text-sm text-muted-foreground">{receipt.metadata.date}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold">Total: RM {receipt.total}</p>
+            <p className="text-lg font-semibold">Total: RM {receipt.financial_summary.total}</p>
             <p className="text-sm text-muted-foreground">
-              Tax: RM {receipt.tax}
+              Tax: RM {receipt.financial_summary.tax}
             </p>
           </div>
         </div>
@@ -34,27 +35,6 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
     </Card>
   );
 };
-
-// const items = [
-//   { name: "Pasta Carbonara", amount: "2", price: "30.00" },
-//   { name: "Grilled Salmon", amount: "1", price: "25.00" },
-//   { name: "Caesar Salad", amount: "1", price: "12.00" },
-//   { name: "Tiramisu", amount: "2", price: "16.00" },
-// ]
-
-interface Item {
-  name: string;
-  quantity: number;
-  total_price: string;
-}
-
-interface Receipt {
-  total: string;
-  restaurant_name: string;
-  date: string;
-  tax: string;
-  items: Item[];
-}
 
 const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
   return (
