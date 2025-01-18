@@ -13,7 +13,7 @@ import { type Receipt } from "@/App";
 
 const BillDetails = ({ receipt }: { receipt: Receipt }) => {
   return (
-    <Card>
+    <Card className="max-w-xl mx-auto">
       <CardHeader>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
@@ -40,7 +40,7 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
 const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
+      {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
       <TableHeader>
         <TableRow>
           <TableHead>Item</TableHead>

@@ -35,7 +35,7 @@ const PersonList: React.FC<{
         isOver && canDrop ? "scale-105 border-2 border-blue-500" : ""
       }`}
     >
-      <h4 className="font-bold text-lg text-gray-800">
+      <h4 className="font-bold text-gray-800">
         {person.name} - Total: RM{person.share_amount.toFixed(2)}
       </h4>
       <ul className="mt-2 space-y-2">
@@ -65,11 +65,11 @@ const UnassignedItems: React.FC<{
   return (
     <div
       ref={drop}
-      className={`p-4 bg-gray-50 shadow rounded-lg mb-4 border-dashed border-2 transition-transform transform ${
+      className={`p-4 w-full h-fit bg-gray-50 shadow rounded-lg mb-4 border-dashed border-2 transition-transform transform ${
         isOver && canDrop ? "scale-105 border-blue-500" : "border-gray-300"
       }`}
     >
-      <h4 className="font-bold text-lg text-gray-800">Unassigned Items</h4>
+      <h4 className="font-bold text-gray-800">Unassigned Items</h4>
       <ul className="mt-2 space-y-2">
         {unassigned_items.map((item) => (
           <Item key={item.item_id} {...item} />
@@ -140,22 +140,23 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
 
   return (
     <DndProvider backend={isMobile ? TouchBackend : HTML5Backend} options={{ enableMouseEvents: true }}>
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-2xl font-semibold text-gray-800 mb-6">
-          People Share
-        </div>
-        <UnassignedItems
-          unassigned_items={unassignedItems}
-          moveItem={(personIndex, item) => moveItem(personIndex, -1, item)}
-        />
-        {peopleShare.map((person, index) => (
-          <PersonList
-            key={person.person_id}
-            person={person}
-            index={index}
-            moveItem={moveItem}
+      <div className="p-6">
+        <div className="flex flex-col md:flex-row gap-4 max-w-3xl mx-auto">
+          <UnassignedItems
+            unassigned_items={unassignedItems}
+            moveItem={(personIndex, item) => moveItem(personIndex, -1, item)}
           />
-        ))}
+          <div className="w-full">
+            {peopleShare.map((person, index) => (
+              <PersonList
+                key={person.person_id}
+                person={person}
+                index={index}
+                moveItem={moveItem}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </DndProvider>
   );

@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts";
 import UploadReceipt from "@/components/upload-receipt";
 import PeopleShare from "@/components/people-share";
 import { useState, ChangeEvent } from "react";
+import { Button } from "./components/ui/button";
 
 export interface Item {
   item_id: string;
@@ -44,6 +45,7 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [receipt, setReceipt] = useState<Receipt>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [showReceipt, setShowReceipt] = useState<boolean>(true);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] || null);
@@ -76,8 +78,23 @@ export default function Home() {
     <BaseLayout className="space-y-4">
       {receipt ? (
         <div className="space-y-4">
-          <BillDetails receipt={receipt} />
-          <PeopleShare receipt={receipt} />
+          {showReceipt ? (
+            <>
+              <BillDetails receipt={receipt} />
+              <div className="flex justify-center gap-2">
+                <Button variant="secondary">Upload New Receipt</Button>
+                <Button onClick={() => setShowReceipt(false)}>Assign Items</Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <PeopleShare receipt={receipt} />
+              <div className="flex justify-center gap-2">
+                <Button variant="secondary" onClick={() => setShowReceipt(true)}>Check Receipt</Button>
+                <Button>Share</Button>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <UploadReceipt
