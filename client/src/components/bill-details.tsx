@@ -59,7 +59,7 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
       <TableFooter>
         <TableRow>
           <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right">RM {receipt.financial_summary.total}</TableCell>
+          <TableCell className="text-right">RM {receipt.financial_summary.subtotal}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

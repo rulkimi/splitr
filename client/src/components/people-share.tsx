@@ -6,7 +6,7 @@ import { useDrag } from "react-dnd";
 import { type Item as ItemProps, type Receipt } from "@/App";
 
 interface PersonShare {
-  person_id: string
+  person_id: string;
   name: string;
   assigned_items: ItemProps[];
   share_amount: number;
@@ -38,16 +38,47 @@ const PersonList: React.FC<{
   );
 };
 
+const UnassignedItems: React.FC<{
+  unassigned_items: ItemProps[];
+  moveItem: (personIndex: number, item: ItemProps) => void;
+}> = ({ unassigned_items, moveItem }) => {
+  const [, drop] = useDrop({
+    accept: "item",
+    drop: (item: ItemProps) => {
+      moveItem(-1, item);
+    },
+  });
+
+  return (
+    <div ref={drop} className="p-4 border rounded-md mb-4 bg-gray-50">
+      <h4 className="font-semibold">Unassigned Items</h4>
+      <ul>
+        {unassigned_items.map((item) => (
+          <Item key={item.item_id} {...item} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
-  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(receipt.split_details.shares);
+  const [peopleShare, setPeopleShare] = useState<PersonShare[]>(
+    receipt.split_details.shares
+  );
+  const [unassignedItems, setUnassignedItems] = useState<ItemProps[]>(
+    receipt.split_details.unassigned_items
+  );
 
   const moveItem = (
     targetPersonIndex: number,
-    targetItemIndex: number,
+    targetItemIndex: number = -1,
     item: ItemProps
   ) => {
     setPeopleShare((prevPeopleShare) => {
       const newPeopleShare = [...prevPeopleShare];
+      let updatedUnassignedItems = [...unassignedItems];
+
+      // Find and remove item from source
       const sourcePersonIndex = newPeopleShare.findIndex((person) =>
         person.assigned_items.some((i) => i.item_id === item.item_id)
       );
@@ -62,19 +93,30 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
           (sum, i) => sum + i.total_price,
           0
         );
-      }
-
-      const targetPerson = newPeopleShare[targetPersonIndex];
-      if (targetItemIndex === -1) {
-        targetPerson.assigned_items.push(item);
       } else {
-        targetPerson.assigned_items.splice(targetItemIndex, 0, item);
+        // If the item is in unassignedItems
+        updatedUnassignedItems = updatedUnassignedItems.filter(
+          (i) => i.item_id !== item.item_id
+        );
       }
-      targetPerson.share_amount = targetPerson.assigned_items.reduce(
-        (sum, i) => sum + i.total_price,
-        0
-      );
 
+      // Assign item to the target person or back to unassignedItems
+      if (targetPersonIndex === -1) {
+        updatedUnassignedItems.push(item);
+      } else {
+        const targetPerson = newPeopleShare[targetPersonIndex];
+        if (targetItemIndex === -1) {
+          targetPerson.assigned_items.push(item);
+        } else {
+          targetPerson.assigned_items.splice(targetItemIndex, 0, item);
+        }
+        targetPerson.share_amount = targetPerson.assigned_items.reduce(
+          (sum, i) => sum + i.total_price,
+          0
+        );
+      }
+
+      setUnassignedItems(updatedUnassignedItems);
       return newPeopleShare;
     });
   };
@@ -86,9 +128,15 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
           <div className="text-lg font-semibold">People Share</div>
         </CardHeader>
         <CardContent>
+          <UnassignedItems
+            unassigned_items={unassignedItems}
+            moveItem={(personIndex, item) =>
+              moveItem(personIndex, -1, item)
+            }
+          />
           {peopleShare.map((person, index) => (
             <PersonList
-              key={person.name}
+              key={person.person_id}
               person={person}
               index={index}
               moveItem={moveItem}

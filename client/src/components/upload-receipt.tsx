@@ -22,8 +22,8 @@ const UploadReceipt = ({
   onSplitBill,
   loading,
 }: UploadReceiptProps) => {
-  const [numPeople, setNumPeople] = useState<string>("");
-  const [remarks, setRemarks] = useState<string>("");
+  const [numPeople, setNumPeople] = useState<string>("4");
+  const [remarks, setRemarks] = useState<string>("sarah had the watermelon juice and john had the fish & chips");
   const [splitEvenly, setSplitEvenly] = useState<boolean>(false);
 
   return (

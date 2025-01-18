@@ -23,7 +23,7 @@ def configure_model():
 	)
 
 def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optional[str]) -> str:
-	base_prompt = """Extract the receipt information and split details in this exact JSON format:
+	base_prompt = """Analyze the receipt with particular attention to indented modifications and their charges. Extract in this exact JSON format:
 	{
 		"receipt_id": string,
 		"metadata": {
@@ -37,15 +37,46 @@ def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optiona
 				"item_id": string,
 				"name": string,
 				"quantity": number,
-				"unit_price": number,
-				"total_price": number
+				"unit_price": number,      # base_price + sum of modification prices
+				"total_price": number      # unit_price * quantity
 			}
 		],
 		"financial_summary": {
 			"subtotal": number,
 			"tax": number | null,
+			"service_charge": number | null,
 			"total": number
 		}"""
+
+	item_detection_rules = """
+	
+	CRITICAL ITEM DETECTION RULES:
+	1. Main Item Format:
+	   - Lines starting with "1x *" are main items
+	   - Extract their base price from the "U.P" column
+	
+	2. Modification Format:
+	   - Lines starting with "-" or indented under main items are modifications
+	   - Look for additional prices on the same line as modifications
+	   - Modifications may have their own price line below them
+	   - Common formats:
+	     * "- Cold"          # Look for price on next line
+	     * "- Cold (Jumbo)"  # Look for price on same or next line
+	     * "- thin"          # May have price of 0.00
+	
+	3. Price Association:
+	   - ANY price appearing below a main item should be considered
+	   - Check both "U.P" and "Price" columns for modification costs
+	   - Include modifications even if price is 0.00
+	
+	4. Special Cases:
+	   - For beverages, look specifically for:
+	     * Temperature modifiers (Hot/Cold)
+	     * Size modifiers (Regular/Large/Jumbo)
+	   - For food items, look for:
+	     * Preparation modifiers (thin, crispy, etc.)
+	     * Add-ons or extras
+	"""
 
 	if split_evenly:
 		split_details = f"""
@@ -57,6 +88,7 @@ def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optiona
 					"item_id": string,
 					"name": string,
 					"quantity": number,
+					"unit_price": number,
 					"total_price": number
 				}}
 			],
@@ -78,6 +110,7 @@ def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optiona
 					"item_id": string,
 					"name": string,
 					"quantity": number,
+					"unit_price": number,
 					"total_price": number
 				}}
 			],
@@ -90,7 +123,8 @@ def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optiona
 							"item_id": string,
 							"name": string,
 							"quantity": number,
-							"total_price": number
+							"unit_price": number,
+							"total_price": number,
 						}}
 					],
 					"share_amount": number
@@ -101,14 +135,16 @@ def create_analysis_prompt(split_evenly: bool, num_people: int, remarks: Optiona
 	assignment_rules = f"""
 	}}
 
-	Rules:
+	ASSIGNMENT RULES:
 	1. Put all items in unassigned_items by default
 	2. Only move items to assigned_items if explicitly mentioned in: {remarks if remarks else 'No remarks provided'}
-	3. Match item names case-insensitive
-	4. Generate unique IDs for all entities
-	5. Round all monetary values to 2 decimal places"""
+	3. Even if there is no item assignments, please still reply with person_id and name with assigned_items as empty array [] and share amount of 0
+	4. Match item names case-insensitive
+	5. Generate unique IDs for all entities
+	6. When assigning items, include ALL their modifications and associated prices
+	7. PLEASE ASSIGN THE ITEMS FROM remarks"""
 
-	return base_prompt + split_details + assignment_rules
+	return base_prompt + split_details + item_detection_rules + assignment_rules
 
 async def analyze_receipt(file: UploadFile, split_evenly: bool, num_people: int, remarks: Optional[str]):
 	try:
@@ -122,7 +158,6 @@ async def analyze_receipt(file: UploadFile, split_evenly: bool, num_people: int,
 		
 		try:
 			response_text = response.text.strip()
-			# remove any markdown code block indicators if present
 			if response_text.startswith('```json\n'):
 				response_text = response_text[7:-3]
 			elif response_text.startswith('```\n'):
