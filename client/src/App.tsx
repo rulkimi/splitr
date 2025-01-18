@@ -23,8 +23,9 @@ export interface Receipt {
   items: Item[]
   financial_summary: {
     subtotal: number
-    tax: number
+    tax: number | null
     total: number
+    service_charge: number | null
   }
   split_details: {
     type: string

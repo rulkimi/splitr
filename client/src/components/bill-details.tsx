@@ -21,9 +21,10 @@ const BillDetails = ({ receipt }: { receipt: Receipt }) => {
             <p className="text-sm text-muted-foreground">{receipt.metadata.date}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold">Total: RM {receipt.financial_summary.total}</p>
+            <p className="text-lg font-semibold">Total: RM {receipt.financial_summary.total.toFixed(2)}</p>
             <p className="text-sm text-muted-foreground">
-              Tax: RM {receipt.financial_summary.tax}
+              {receipt.financial_summary.tax && `Tax: RM ${receipt.financial_summary.tax.toFixed(2)}`}
+              {receipt.financial_summary.service_charge && `Service Charge: RM ${receipt.financial_summary.service_charge.toFixed(2)}`}
             </p>
           </div>
         </div>
@@ -44,7 +45,7 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
         <TableRow>
           <TableHead>Item</TableHead>
           <TableHead>Amount</TableHead>
-          <TableHead className="text-right">Price</TableHead>
+          <TableHead className="text-right">Price (RM)</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -52,14 +53,26 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
           <TableRow key={index}>
             <TableCell>{item.name}</TableCell>
             <TableCell>{item.quantity}</TableCell>
-            <TableCell className="text-right">{item.total_price}</TableCell>
+            <TableCell className="text-right">{item.total_price.toFixed(2)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
       <TableFooter>
+        {receipt.financial_summary.tax && (
+          <TableRow>
+            <TableCell colSpan={2}>Tax</TableCell>
+            <TableCell className="text-right">{receipt.financial_summary.tax.toFixed(2)}</TableCell>
+          </TableRow>
+        )}
+        {receipt.financial_summary.service_charge && (
+          <TableRow>
+            <TableCell colSpan={2}>Service Charge</TableCell>
+            <TableCell className="text-right">{receipt.financial_summary.service_charge.toFixed(2)}</TableCell>
+          </TableRow>
+        )}
         <TableRow>
           <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right">RM {receipt.financial_summary.subtotal}</TableCell>
+          <TableCell className="text-right">RM {receipt.financial_summary.subtotal.toFixed(2)}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

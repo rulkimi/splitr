@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { TouchBackend } from "react-dnd-touch-backend";
 import { useDrag } from "react-dnd";
 import { type Item as ItemProps, type Receipt } from "@/App";
 
@@ -17,19 +17,28 @@ const PersonList: React.FC<{
   index: number;
   moveItem: (dragIndex: number, hoverIndex: number, item: any) => void;
 }> = ({ person, index: personIndex, moveItem }) => {
-  const [, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: "item",
     drop: (item: ItemProps) => {
       moveItem(personIndex, -1, item);
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
   });
 
   return (
-    <div ref={drop} className="p-4 border rounded-md mb-4">
-      <h4 className="font-semibold">
-        {person.name} - Total: ${person.share_amount.toFixed(2)}
+    <div
+      ref={drop}
+      className={`p-4 bg-white shadow rounded-lg mb-4 transition-transform transform ${
+        isOver && canDrop ? "scale-105 border-2 border-blue-500" : ""
+      }`}
+    >
+      <h4 className="font-bold text-lg text-gray-800">
+        {person.name} - Total: RM{person.share_amount.toFixed(2)}
       </h4>
-      <ul>
+      <ul className="mt-2 space-y-2">
         {person.assigned_items.map((item) => (
           <Item key={item.item_id} {...item} />
         ))}
@@ -42,17 +51,26 @@ const UnassignedItems: React.FC<{
   unassigned_items: ItemProps[];
   moveItem: (personIndex: number, item: ItemProps) => void;
 }> = ({ unassigned_items, moveItem }) => {
-  const [, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: "item",
     drop: (item: ItemProps) => {
       moveItem(-1, item);
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
   });
 
   return (
-    <div ref={drop} className="p-4 border rounded-md mb-4 bg-gray-50">
-      <h4 className="font-semibold">Unassigned Items</h4>
-      <ul>
+    <div
+      ref={drop}
+      className={`p-4 bg-gray-50 shadow rounded-lg mb-4 border-dashed border-2 transition-transform transform ${
+        isOver && canDrop ? "scale-105 border-blue-500" : "border-gray-300"
+      }`}
+    >
+      <h4 className="font-bold text-lg text-gray-800">Unassigned Items</h4>
+      <ul className="mt-2 space-y-2">
         {unassigned_items.map((item) => (
           <Item key={item.item_id} {...item} />
         ))}
@@ -78,7 +96,6 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
       const newPeopleShare = [...prevPeopleShare];
       let updatedUnassignedItems = [...unassignedItems];
 
-      // Find and remove item from source
       const sourcePersonIndex = newPeopleShare.findIndex((person) =>
         person.assigned_items.some((i) => i.item_id === item.item_id)
       );
@@ -94,13 +111,11 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
           0
         );
       } else {
-        // If the item is in unassignedItems
         updatedUnassignedItems = updatedUnassignedItems.filter(
           (i) => i.item_id !== item.item_id
         );
       }
 
-      // Assign item to the target person or back to unassignedItems
       if (targetPersonIndex === -1) {
         updatedUnassignedItems.push(item);
       } else {
@@ -121,29 +136,27 @@ export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
     });
   };
 
+  const isMobile = window.innerWidth <= 768;
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Card>
-        <CardHeader>
-          <div className="text-lg font-semibold">People Share</div>
-        </CardHeader>
-        <CardContent>
-          <UnassignedItems
-            unassigned_items={unassignedItems}
-            moveItem={(personIndex, item) =>
-              moveItem(personIndex, -1, item)
-            }
+    <DndProvider backend={isMobile ? TouchBackend : HTML5Backend} options={{ enableMouseEvents: true }}>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="text-2xl font-semibold text-gray-800 mb-6">
+          People Share
+        </div>
+        <UnassignedItems
+          unassigned_items={unassignedItems}
+          moveItem={(personIndex, item) => moveItem(personIndex, -1, item)}
+        />
+        {peopleShare.map((person, index) => (
+          <PersonList
+            key={person.person_id}
+            person={person}
+            index={index}
+            moveItem={moveItem}
           />
-          {peopleShare.map((person, index) => (
-            <PersonList
-              key={person.person_id}
-              person={person}
-              index={index}
-              moveItem={moveItem}
-            />
-          ))}
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </DndProvider>
   );
 };
@@ -160,12 +173,12 @@ export const Item: React.FC<ItemProps> = ({ item_id, name, total_price }) => {
   return (
     <li
       ref={drag}
-      className={`p-2 bg-gray-100 border rounded-md mb-2 flex justify-between cursor-move ${
+      className={`p-3 bg-gray-100 border rounded-lg flex justify-between items-center cursor-move transition-transform transform hover:scale-105 shadow-sm ${
         isDragging ? "opacity-50" : ""
       }`}
     >
-      <span>{name}</span>
-      <span>${total_price.toFixed(2)}</span>
+      <span className="font-medium text-gray-700">{name}</span>
+      <span className="font-semibold text-gray-800">RM{total_price.toFixed(2)}</span>
     </li>
   );
 };
