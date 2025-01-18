@@ -27,7 +27,7 @@ const UploadReceipt = ({
   const [splitEvenly, setSplitEvenly] = useState<boolean>(false);
 
   return (
-    <Card>
+    <Card className="max-w-xl mx-auto">
       <CardHeader>
         <div>
           <h3 className="text-lg font-semibold flex items-center space-x-2">
