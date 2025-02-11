@@ -23,9 +23,7 @@ const Friends = () => {
       </div>
       <ul className="flex gap-0.5">
         {friends?.map(friend => (
-          <li key={friend.id}>
-            <FriendIcon size="lg" friend={friend} />
-          </li>
+          <FriendIcon key={friend.id} size="lg" friend={friend} />
         ))}
       </ul>
     </div>
