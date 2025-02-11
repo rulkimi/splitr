@@ -79,7 +79,7 @@ const UnassignedItems: React.FC<{
   );
 };
 
-export const PeopleShare = ({ receipt }: { receipt: Receipt }) => {
+export const PeopleShare: React.FC<{ receipt: Receipt }> = ({ receipt }) => {
   const [peopleShare, setPeopleShare] = useState<PersonShare[]>(
     receipt.split_details.shares
   );
