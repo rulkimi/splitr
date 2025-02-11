@@ -1,108 +1,108 @@
-import BillDetails from "@/components/bill-details";
 import BaseLayout from "@/layouts";
-import UploadReceipt from "@/components/upload-receipt";
-import PeopleShare from "@/components/people-share";
-import { useState, ChangeEvent } from "react";
-import { Button } from "./components/ui/button";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Home />
+    </QueryClientProvider>
+  )
+}
 
 export interface Item {
   item_id: string;
   name: string;
   quantity: number;
-  unit_price?: number;
+  unit_price: number;
   total_price: number;
+  assigned_to: number | null;
 }
 
-export interface Receipt {
-  receipt_id: string;
-  metadata: {
-    restaurant_name: string
-    date: string
-    time: string
-    receipt_number: string
-  }
-  items: Item[]
+export interface Friend {
+  id: number;
+  name: string;
+  photo: string | null;
+  amount_owed: number;
+  paid: boolean;
+  items: {
+    item_id: string;
+    name: string;
+    quantity: number;
+    unit_price: number;
+    total_price: number;
+  }[];
+}
+
+export interface Bill {
+  id: string;
+  restaurant_name: string;
+  date: string;
+  time: string;
   financial_summary: {
-    subtotal: number
-    tax: number | null
-    total: number
-    service_charge: number | null
-  }
-  split_details: {
-    type: string
-    num_people: number
-    unassigned_items: Item[]
-    shares: {
-      person_id: string
-      name: string
-      assigned_items: Item[]
-      share_amount: number
-    }[]
-  }
+    subtotal: number;
+    tax: number;
+    service_charge: number;
+    total: number;
+  };
+  items: Item[];
+  friends: Friend[];
 }
 
-export default function Home() {
-  const [file, setFile] = useState<File | null>(null);
-  const [receipt, setReceipt] = useState<Receipt>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showReceipt, setShowReceipt] = useState<boolean>(true);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] || null);
+function Home() {
+  const fetchBills = async (): Promise<Bill[]> => {
+    const res = await fetch("/data-structures/bills.json");
+    return res.json();
   };
 
-  const getSplitBill = async (
-    numPeople: string | undefined,
-    remarks: string | undefined,
-    splitEvenly: boolean
-  ) => {
-    if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-
-    setLoading(true);
-    const response = await fetch(
-      `http://localhost:8000/analyze/?num_people=${numPeople}&split_evenly=${splitEvenly}&remarks=${remarks}`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const responseData = await response.json();
-    setLoading(false);
-    setReceipt(responseData);
-  };
+  const { data: bills } = useQuery({
+    queryKey: ["bills"],
+    queryFn: fetchBills,
+  });
 
   return (
-    <BaseLayout className="space-y-4">
-      {receipt ? (
-        <div className="space-y-4">
-          {showReceipt ? (
-            <>
-              <BillDetails receipt={receipt} />
-              <div className="flex justify-center gap-2">
-                <Button variant="secondary">Upload New Receipt</Button>
-                <Button onClick={() => setShowReceipt(false)}>Assign Items</Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <PeopleShare receipt={receipt} />
-              <div className="flex justify-center gap-2">
-                <Button variant="secondary" onClick={() => setShowReceipt(true)}>Check Receipt</Button>
-                <Button>Share</Button>
-              </div>
-            </>
-          )}
-        </div>
-      ) : (
-        <UploadReceipt
-          onSplitBill={getSplitBill}
-          onUploadImage={handleFileChange}
-          loading={loading}
-        />
-      )}
+    <BaseLayout>
+      <ul className="space-y-2">
+        {bills?.map((bill: Bill) => (
+          <BillList key={bill.id} bill={bill} />
+        ))}
+      </ul>
     </BaseLayout>
   );
 }
+
+export const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
+  return (
+    <li className="bg-white p-3 rounded-lg space-y-2">
+      <div>
+        <div className="flex justify-between gap-2 font-semibold">
+          <div>{bill.restaurant_name}</div>
+          <div>RM {bill.financial_summary.total}</div>
+        </div>
+        <div className="text-gray-500">{bill.date} | {bill.time}</div>
+      </div>
+      <ul className="flex">
+        {bill.friends.map((friend, index) => (
+          <FriendIcon key={friend.id} friend={friend} index={index} />
+        ))}
+      </ul>
+    </li>
+  )
+}
+
+const FriendIcon: React.FC<{ friend: Friend, index: number }> = ({ friend, index }) => {
+  return (
+    <li className={`${index === 0 ? '' : 'ml-[-12px]' }`}>
+      <div
+        className="bg-gray-100 w-8 h-8 flex items-center justify-center rounded-full aspect-square font-bold text-gray-500 border border-white"
+        title={friend.name}
+      >
+        {friend.photo ? friend.photo : friend.name.charAt(0)}
+      </div>
+    </li>
+  )
+}
+
+

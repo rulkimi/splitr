@@ -1,164 +1,162 @@
-{
-  "bills": [
-    {
-      "id": "1",
-      "restaurant_name": "Oriental Kopi",
-      "date": "11 Oct 2024",
-      "time": "21:09",
-      "financial_summary": {
-        "subtotal": 92.0,
-        "tax": 8.95,
-        "service_charge": 17.9,
-        "total": 118.85
-      },
-      "items": [
-        {
-          "item_id": "item_5",
-          "name": "Kopi",
-          "quantity": 1,
-          "unit_price": 5.0,
-          "total_price": 5.0,
-          "assigned_to": null
-        },
-        {
-          "item_id": "item_6",
-          "name": "Teh",
-          "quantity": 2,
-          "unit_price": 2.5,
-          "total_price": 5.0,
-          "assigned_to": null
-        }
-      ],
-      "friends": [
-        {
-          "id": 1,
-          "name": "Melissa",
-          "photo": null,
-          "amount_owed": 22.125,
-          "paid": false,
-          "items": [
-            {
-              "item_id": "item_1",
-              "name": "Pineapple Fried Rice",
-              "quantity": 1,
-              "unit_price": 12.4,
-              "total_price": 12.4
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "name": "John",
-          "photo": null,
-          "amount_owed": 0,
-          "paid": false,
-          "items": []
-        }
-      ]
+[
+  {
+    "id": "1",
+    "restaurant_name": "Oriental Kopi",
+    "date": "11 Oct 2024",
+    "time": "21:09",
+    "financial_summary": {
+      "subtotal": 92.0,
+      "tax": 8.95,
+      "service_charge": 17.9,
+      "total": 118.85
     },
-    {
-      "id": "2",
-      "restaurant_name": "Sushiritto",
-      "date": "12 Oct 2024",
-      "time": "13:37",
-      "financial_summary": {
-        "subtotal": 25.50,
-        "tax": 2.55,
-        "service_charge": 0,
-        "total": 28.05
+    "items": [
+      {
+        "item_id": "item_5",
+        "name": "Kopi",
+        "quantity": 1,
+        "unit_price": 5.0,
+        "total_price": 5.0,
+        "assigned_to": null
       },
-      "items": [
-        {
-          "item_id": "item_2",
-          "name": "Chicken Teriyaki",
-          "quantity": 1,
-          "unit_price": 12.75,
-          "total_price": 12.75,
-          "assigned_to": 2
-        }
-      ],
-      "friends": [
-        {
-          "id": 2,
-          "name": "John",
-          "photo": null,
-          "amount_owed": 25.50,
-          "paid": false,
-          "items": [
-            {
-              "item_id": "item_2",
-              "name": "Chicken Teriyaki",
-              "quantity": 1,
-              "unit_price": 12.75,
-              "total_price": 12.75
-            }
-          ]
-        }
-      ]
+      {
+        "item_id": "item_6",
+        "name": "Teh",
+        "quantity": 2,
+        "unit_price": 2.5,
+        "total_price": 5.0,
+        "assigned_to": null
+      }
+    ],
+    "friends": [
+      {
+        "id": 1,
+        "name": "Melissa",
+        "photo": null,
+        "amount_owed": 22.125,
+        "paid": false,
+        "items": [
+          {
+            "item_id": "item_1",
+            "name": "Pineapple Fried Rice",
+            "quantity": 1,
+            "unit_price": 12.4,
+            "total_price": 12.4
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "John",
+        "photo": null,
+        "amount_owed": 0,
+        "paid": false,
+        "items": []
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "restaurant_name": "Sushiritto",
+    "date": "12 Oct 2024",
+    "time": "13:37",
+    "financial_summary": {
+      "subtotal": 25.50,
+      "tax": 2.55,
+      "service_charge": 0,
+      "total": 28.05
     },
-    {
-      "id": "3",
-      "restaurant_name": "Ramen Stop",
-      "date": "12 Oct 2024",
-      "time": "18:45",
-      "financial_summary": {
-        "subtotal": 44.25,
-        "tax": 4.43,
-        "service_charge": 0,
-        "total": 48.68
+    "items": [
+      {
+        "item_id": "item_2",
+        "name": "Chicken Teriyaki",
+        "quantity": 1,
+        "unit_price": 12.75,
+        "total_price": 12.75,
+        "assigned_to": 2
+      }
+    ],
+    "friends": [
+      {
+        "id": 2,
+        "name": "John",
+        "photo": null,
+        "amount_owed": 25.50,
+        "paid": false,
+        "items": [
+          {
+            "item_id": "item_2",
+            "name": "Chicken Teriyaki",
+            "quantity": 1,
+            "unit_price": 12.75,
+            "total_price": 12.75
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "restaurant_name": "Ramen Stop",
+    "date": "12 Oct 2024",
+    "time": "18:45",
+    "financial_summary": {
+      "subtotal": 44.25,
+      "tax": 4.43,
+      "service_charge": 0,
+      "total": 48.68
+    },
+    "items": [
+      {
+        "item_id": "item_3",
+        "name": "Beef Ramen",
+        "quantity": 1,
+        "unit_price": 12.75,
+        "total_price": 12.75,
+        "assigned_to": 2
       },
-      "items": [
-        {
-          "item_id": "item_3",
-          "name": "Beef Ramen",
-          "quantity": 1,
-          "unit_price": 12.75,
-          "total_price": 12.75,
-          "assigned_to": 2
-        },
-        {
-          "item_id": "item_4",
-          "name": "Sushi Platter",
-          "quantity": 1,
-          "unit_price": 18.75,
-          "total_price": 18.75,
-          "assigned_to": 3
-        }
-      ],
-      "friends": [
-        {
-          "id": 2,
-          "name": "John",
-          "photo": null,
-          "amount_owed": 25.50,
-          "paid": false,
-          "items": [
-            {
-              "item_id": "item_3",
-              "name": "Beef Ramen",
-              "quantity": 1,
-              "unit_price": 12.75,
-              "total_price": 12.75
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "name": "Jane",
-          "photo": null,
-          "amount_owed": 18.75,
-          "paid": false,
-          "items": [
-            {
-              "item_id": "item_4",
-              "name": "Sushi Platter",
-              "quantity": 1,
-              "unit_price": 18.75,
-              "total_price": 18.75
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+      {
+        "item_id": "item_4",
+        "name": "Sushi Platter",
+        "quantity": 1,
+        "unit_price": 18.75,
+        "total_price": 18.75,
+        "assigned_to": 3
+      }
+    ],
+    "friends": [
+      {
+        "id": 2,
+        "name": "John",
+        "photo": null,
+        "amount_owed": 25.50,
+        "paid": false,
+        "items": [
+          {
+            "item_id": "item_3",
+            "name": "Beef Ramen",
+            "quantity": 1,
+            "unit_price": 12.75,
+            "total_price": 12.75
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Jane",
+        "photo": null,
+        "amount_owed": 18.75,
+        "paid": false,
+        "items": [
+          {
+            "item_id": "item_4",
+            "name": "Sushi Platter",
+            "quantity": 1,
+            "unit_price": 18.75,
+            "total_price": 18.75
+          }
+        ]
+      }
+    ]
+  }
+]
