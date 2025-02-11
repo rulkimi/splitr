@@ -1,5 +1,6 @@
 import BaseLayout from "@/layouts";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import RadialProgressBar from "@/components/radial-progress-bar";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ export interface Bill {
     tax: number;
     service_charge: number;
     total: number;
+    total_paid: number;
   };
   items: Item[];
   friends: Friend[];
@@ -75,7 +77,7 @@ function Home() {
 
 export const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
   return (
-    <li className="bg-white p-3 rounded-lg space-y-2">
+    <li className="bg-white p-3 rounded-lg space-y-2 relative">
       <div>
         <div className="flex justify-between gap-2 font-semibold">
           <div>{bill.restaurant_name}</div>
@@ -88,6 +90,13 @@ export const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
           <FriendIcon key={friend.id} friend={friend} index={index} />
         ))}
       </ul>
+      <div className="absolute bottom-2 right-4">
+        <RadialProgressBar 
+          progress={Math.round((bill.financial_summary.total_paid / bill.financial_summary.total) * 100)}
+          size={65}
+          color="text-green-500"
+        />
+      </div>
     </li>
   )
 }

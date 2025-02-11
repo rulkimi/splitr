@@ -8,7 +8,8 @@
       "subtotal": 92.0,
       "tax": 8.95,
       "service_charge": 17.9,
-      "total": 118.85
+      "total": 118.85,
+      "total_paid": 94.0
     },
     "items": [
       {
@@ -64,7 +65,8 @@
       "subtotal": 25.50,
       "tax": 2.55,
       "service_charge": 0,
-      "total": 28.05
+      "total": 28.05,
+      "total_paid": 0
     },
     "items": [
       {
@@ -104,7 +106,8 @@
       "subtotal": 44.25,
       "tax": 4.43,
       "service_charge": 0,
-      "total": 48.68
+      "total": 48.68,
+      "total_paid": 0
     },
     "items": [
       {
