@@ -37,14 +37,18 @@ const Friends = () => {
 
   const addFriend = async (): Promise<void> => {
     if (!image) return;
+
+    const friendId = Math.floor(Math.random() * 2147483647);
     
-    const { data: imageUrl } = await supabase
+    const { error } = await supabase
       .storage
       .from('images')
-      .upload(`${name}-icon`, image);
-    console.log('image url', imageUrl)
+      .upload(`${friendId}-icon`, image);
+    if (error) throw error;
+    const { data: imageStore } = supabase.storage.from('images').getPublicUrl(`${friendId}-icon`);
     await supabase.from('friends').insert({
-      id: Math.floor(Math.random() * 2147483647),
+      id: friendId,
+      photo: imageStore.publicUrl,
       name: name
     });
     await refetch();

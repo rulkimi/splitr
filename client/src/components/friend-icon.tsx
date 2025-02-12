@@ -4,19 +4,24 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
-
-const FriendIcon: React.FC<{ friend: Friend, className?: string, size?: "lg" | "md" }> = ({ friend, className, size }) => {
+const FriendIcon: React.FC<{ friend: Friend; className?: string; size?: "lg" | "md" }> = ({ friend, className, size }) => {
   return (
     <li className={className}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
             <div
-              className={`bg-gray-100 ${size === 'lg' ? 'w-12 h-12' : 'w-8 h-8'} flex items-center justify-center rounded-full aspect-square font-bold text-gray-500 border border-white`}
+              className={`bg-gray-100 ${
+                size === "lg" ? "w-12 h-12" : "w-8 h-8"
+              } flex items-center justify-center rounded-full aspect-square font-bold text-gray-500 border border-white relative`}
             >
-              {friend.photo ? friend.photo : friend.name.charAt(0)}
+              {friend.photo ? (
+                <img src={friend.photo} alt={`${friend.name} icon`} className="object-cover w-full h-full rounded-full" />
+              ) : (
+                friend.name.charAt(0)
+              )}
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -25,7 +30,7 @@ const FriendIcon: React.FC<{ friend: Friend, className?: string, size?: "lg" | "
         </Tooltip>
       </TooltipProvider>
     </li>
-  )
-}
+  );
+};
 
 export default FriendIcon;
