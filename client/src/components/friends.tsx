@@ -19,8 +19,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const Friends = () => {
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [image, setImage] = useState<File | null>(null);
 
   const fetchFriends = async (): Promise<Friend[]> => {
     const { data, error } = await supabase.from('friends').select();
@@ -35,6 +36,13 @@ const Friends = () => {
 
 
   const addFriend = async (): Promise<void> => {
+    if (!image) return;
+    
+    const { data: imageUrl } = await supabase
+      .storage
+      .from('images')
+      .upload(`${name}-icon`, image);
+    console.log('image url', imageUrl)
     await supabase.from('friends').insert({
       id: Math.floor(Math.random() * 2147483647),
       name: name
@@ -43,8 +51,13 @@ const Friends = () => {
     setIsDialogOpen(false);
   }
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedImage = event.target.files?.[0] || null;
+    setImage(selectedImage);
+  }
+
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-0.5 overflow-x-auto hide-scrollbar">
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger>
@@ -59,7 +72,7 @@ const Friends = () => {
             <DialogTitle>Add Friend</DialogTitle>
           </DialogHeader>
           <DialogDescription className="space-y-4">
-            <div>
+            <span className="block">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
@@ -68,14 +81,18 @@ const Friends = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}  
               />
-            </div>
-            <div>
+            </span>
+            <span className="block">
               <Label htmlFor="picture">Picture</Label>
-              <Input id="picture" type="file" />
-            </div>
+              <Input
+                id="picture"
+                type="file"
+                onChange={handleImageChange}
+              />
+            </span>
           </DialogDescription>
           <DialogFooter>
-            <DialogClose>
+            <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button onClick={addFriend}>Add Friend</Button>
