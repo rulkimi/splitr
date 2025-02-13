@@ -164,7 +164,7 @@ const Bills = () => {
 
 const BillList: React.FC<{ bill: Bill, onClick: () => void }> = ({ bill, onClick }) => {
   return (
-    <li className="bg-white p-3 rounded-lg space-y-2 relative" onClick={onClick}>
+    <li className="bg-white p-3 rounded-lg space-y-2 relative cursor-pointer hover:bg-gray-50 hover:shadow-md" onClick={onClick}>
       <div>
         <div className="flex justify-between gap-2 font-semibold">
           <div>{bill.restaurant_name}</div>

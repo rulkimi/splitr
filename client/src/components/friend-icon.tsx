@@ -9,7 +9,7 @@ import {
 const FriendIcon: React.FC<{
   friend: Friend;
   className?: string;
-  size?: "lg" | "md";
+  size?: "lg" | "md" | "sm";
   onClick?: () => void;
 }> = ({ friend, className, size, onClick }) => {
   return (
@@ -19,7 +19,7 @@ const FriendIcon: React.FC<{
           <TooltipTrigger>
             <div
               className={`bg-gray-100 ${
-                size === "lg" ? "w-12 h-12" : "w-8 h-8"
+                size === "lg" ? "w-12 h-12" : size === "sm" ? "w-6 h-6" : "w-8 h-8"
               } flex items-center justify-center rounded-full aspect-square font-bold text-gray-500 border border-white relative`}
             >
               {friend.photo ? (

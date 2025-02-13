@@ -8,7 +8,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  // DialogClose,
+} from "@/components/ui/dialog";
 import { type Bill } from "@/types";
+import FriendIcon from "@/components/friend-icon";
+import { Plus } from "lucide-react";
+import { type Friend } from "@/types";
+import { useState } from "react";
 
 const BillDetails = ({ bill }: { bill: Bill }) => {
   return (
@@ -22,8 +36,8 @@ const BillDetails = ({ bill }: { bill: Bill }) => {
           <div className="text-right">
             <p className="text-lg font-semibold">Total: RM {bill.financial_summary.total.toFixed(2)}</p>
             <p className="text-sm text-muted-foreground">
-              {bill.financial_summary.tax && `Tax: RM ${bill.financial_summary.tax.toFixed(2)}`}
-              {bill.financial_summary.service_charge && `Service Charge: RM ${bill.financial_summary.service_charge.toFixed(2)}`}
+              {bill.financial_summary.tax > 0 && `Tax: RM ${bill.financial_summary.tax.toFixed(2)}`}
+              {bill.financial_summary.service_charge > 0 && `Service Charge: RM ${bill.financial_summary.service_charge.toFixed(2)}`}
             </p>
           </div>
         </div>
@@ -37,6 +51,19 @@ const BillDetails = ({ bill }: { bill: Bill }) => {
 };
 
 const ItemsPurchased = ({ bill }: { bill: Bill }) => {
+  const [itemFriends, setItemFriends] = useState<Record<string, Friend[]>>({});
+
+  const handleAddFriendToItem = (friend: Friend, itemId: string) => {
+    const newFriends = [...(itemFriends[itemId] || [])];
+    const friendIndex = newFriends.findIndex((f) => f.friend_id === friend.friend_id);
+    if (friendIndex === -1) {
+      newFriends.push(friend);
+    } else {
+      newFriends.splice(friendIndex, 1);
+    }
+    setItemFriends({ ...itemFriends, [itemId]: newFriends });
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -49,7 +76,51 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
       <TableBody>
         {bill.items.map((item) => (
           <TableRow key={item.item_id}>
-            <TableCell>{item.name}</TableCell>
+            <TableCell>
+              <div className="space-y-1">
+                <div>{item.name}</div>
+                <ul className="flex gap-[0.5px]">
+                  <Dialog>
+                    <DialogTrigger>
+                      <div
+                        className="bg-gray-100 w-6 h-6 flex items-center justify-center rounded-full aspect-square font-bold border-2 border-gray-400 border-dashed"
+                      >
+                        <Plus className="text-gray-500" />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Friends</DialogTitle>
+                      </DialogHeader>
+                      <DialogDescription>
+                        <span className="flex gap-0.5">
+                          {bill.friends?.map((friend) => (
+                            <FriendIcon
+                              key={friend.friend_id}
+                              className={`list-none ${
+                                (itemFriends[item.item_id] || []).find(
+                                  (f) => f.friend_id === friend.friend_id
+                                )
+                                  ? "opacity-100"
+                                  : "opacity-50"
+                              }`}
+                              size="lg"
+                              friend={friend}
+                              onClick={() => handleAddFriendToItem(friend, item.item_id)}
+                            />
+                          ))}
+                        </span>
+                      </DialogDescription>
+                      <DialogFooter>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  {(itemFriends[item.item_id] || []).map((friend) => (
+                    <FriendIcon key={friend.friend_id} friend={friend} size="sm" />
+                  ))}
+                </ul>
+              </div>
+            </TableCell>
             <TableCell>{item.quantity}</TableCell>
             <TableCell className="text-right">{item.total_price.toFixed(2)}</TableCell>
           </TableRow>

@@ -4,6 +4,7 @@ export interface Item {
   quantity: number;
   unit_price: number;
   total_price: number;
+  assigned_to?: Friend[];
 }
 
 export interface Friend {
