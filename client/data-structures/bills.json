@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "bill_id": "1",
     "restaurant_name": "Oriental Kopi",
     "date": "11 Oct 2024",
     "time": "21:09",
@@ -31,7 +31,7 @@
     ],
     "friends": [
       {
-        "id": 1,
+        "friend_id": 1,
         "name": "Melissa",
         "photo": null,
         "amount_owed": 22.125,
@@ -47,7 +47,7 @@
         ]
       },
       {
-        "id": 2,
+        "friend_id": 2,
         "name": "John",
         "photo": null,
         "amount_owed": 0,
@@ -57,7 +57,7 @@
     ]
   },
   {
-    "id": "2",
+    "bill_id": "2",
     "restaurant_name": "Sushiritto",
     "date": "12 Oct 2024",
     "time": "13:37",
@@ -80,7 +80,7 @@
     ],
     "friends": [
       {
-        "id": 2,
+        "friend_id": 2,
         "name": "John",
         "photo": null,
         "amount_owed": 25.50,
@@ -98,7 +98,7 @@
     ]
   },
   {
-    "id": "3",
+    "bill_id": "3",
     "restaurant_name": "Ramen Stop",
     "date": "12 Oct 2024",
     "time": "18:45",
@@ -129,7 +129,7 @@
     ],
     "friends": [
       {
-        "id": 2,
+        "friend_id": 2,
         "name": "John",
         "photo": null,
         "amount_owed": 25.50,
@@ -145,7 +145,7 @@
         ]
       },
       {
-        "id": 3,
+        "friend_id": 3,
         "name": "Jane",
         "photo": null,
         "amount_owed": 18.75,

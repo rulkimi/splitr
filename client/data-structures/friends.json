@@ -1,40 +1,40 @@
 [
   {
-    "id": "1",
+    "friend_id": "1",
     "name": "Melissa",
     "photo": null,
     "total_owed": 12.40,
-    "orders": [
+    "bills": [
       {
-        "order_id": "1",
+        "bill_id": "1",
         "amount_owed": 12.40
       }
     ]
   },
   {
-    "id": "2",
+    "friend_id": "2",
     "name": "John",
     "photo": null,
     "total_owed": 25.50,
-    "orders": [
+    "bills": [
       {
-        "order_id": "2",
+        "bill_id": "2",
         "amount_owed": 12.75
       },
       {
-        "order_id": "3",
+        "bill_id": "3",
         "amount_owed": 12.75
       }
     ]
   },
   {
-    "id": "3",
+    "friend_id": "3",
     "name": "Jane",
     "photo": null,
     "total_owed": 18.75,
-    "orders": [
+    "bills": [
       {
-        "order_id": "3",
+        "bill_id": "3",
         "amount_owed": 18.75
       }
     ]

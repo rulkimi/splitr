@@ -74,7 +74,7 @@ const Bills: React.FC<{ bills: Bill[]}> = ({ bills }) => {
   return (
     <ul className="space-y-2">
       {bills.map((bill: Bill) => (
-        <BillList key={bill.id} bill={bill} />
+        <BillList key={bill.bill_id} bill={bill} />
       ))}
     </ul>
   )
@@ -92,7 +92,7 @@ export const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
       </div>
       <ul className="flex">
         {bill.friends.map((friend, index) => (
-          <FriendIcon key={friend.id} friend={friend} className={`${index === 0 ? '' : 'ml-[-12px]' }`} />
+          <FriendIcon key={friend.friend_id} friend={friend} className={`${index === 0 ? '' : 'ml-[-12px]' }`} />
         ))}
       </ul>
       <div className="absolute bottom-2 right-4">
