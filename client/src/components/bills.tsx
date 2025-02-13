@@ -1,4 +1,4 @@
-import { type Bill } from "@/types";
+import { type Bill, type Friend } from "@/types";
 import RadialProgressBar from "@/components/radial-progress-bar";
 import FriendIcon from "@/components/friend-icon";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose
+  DialogClose,
 } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
@@ -21,8 +21,10 @@ import axios from "axios";
 
 const Bills = () => {
   const [newBill, setNewBill] = useState<File | null>(null);
+  const [friendsInvolved, setFriendsInvolved] = useState<Friend[]>([]);
+
   const fetchBills = async (): Promise<Bill[]> => {
-    const { data, error } = await supabase.from('bills').select();
+    const { data, error } = await supabase.from("bills").select();
     if (error) throw error;
     return data ?? [];
   };
@@ -32,6 +34,17 @@ const Bills = () => {
     queryFn: fetchBills,
   });
 
+  const fetchFriends = async (): Promise<Friend[]> => {
+    const { data, error } = await supabase.from("friends").select();
+    if (error) throw error;
+    return data ?? [];
+  };
+
+  const { data: friends } = useQuery({
+    queryKey: ["friends"],
+    queryFn: fetchFriends,
+  });
+
   const billId = Math.floor(Math.random() * 2147483647);
 
   const addBill = async () => {
@@ -39,36 +52,77 @@ const Bills = () => {
     const formData = new FormData();
     formData.append("file", newBill);
     try {
-      const response = await axios.post("http://localhost:8000/analyze/", formData);
+      const response = await axios.post(
+        "http://localhost:8000/analyze/",
+        formData
+      );
       const billData = response.data;
-      const finalBillData = { ...billData, bill_id: billId };
-      await supabase.from('bills').insert(finalBillData);
+      const finalBillData = {
+        user_id: localStorage.getItem("userId"),
+        ...billData,
+        bill_id: billId,
+        friends: friendsInvolved,
+      };
+      await supabase.from("bills").insert(finalBillData);
     } catch (error) {
       console.error("Error adding bill:", error);
     }
   };
-  
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedBill = event.target.files?.[0] || null;
     setNewBill(selectedBill);
-  }
+  };
+
+  const handleAddFriends = (friend: Friend) => {
+    const newFriendsInvolved = [...friendsInvolved];
+    const friendIndex = newFriendsInvolved.findIndex(
+      (f) => f.friend_id === friend.friend_id
+    );
+    if (friendIndex === -1) {
+      newFriendsInvolved.push(friend);
+    } else {
+      newFriendsInvolved.splice(friendIndex, 1);
+    }
+    setFriendsInvolved(newFriendsInvolved);
+  };
 
   return (
     <>
       <div className="flex justify-between">
         <span className="font-semibold">Bills</span>
         <Dialog>
-          <DialogTrigger>
-            + Add Bill
-          </DialogTrigger>
+          <DialogTrigger>+ Add Bill</DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Bill</DialogTitle>
             </DialogHeader>
             <DialogDescription>
+              <span className="flex gap-0.5">
+                {friends?.map((friend) => (
+                  <FriendIcon
+                    className={`list-none ${
+                      friendsInvolved.find(
+                        (friendInvolved) =>
+                          friendInvolved.friend_id === friend.friend_id
+                      )
+                        ? "opacity-100"
+                        : "opacity-50"
+                    }`}
+                    key={friend.friend_id}
+                    size="lg"
+                    friend={friend}
+                    onClick={() => handleAddFriends(friend)}
+                  />
+                ))}
+              </span>
               <span className="block">
                 <Label htmlFor="new-bill-image">Upload a bill</Label>
-                <Input id="new-bill-image" type="file" onChange={handleImageUpload} />
+                <Input
+                  id="new-bill-image"
+                  type="file"
+                  onChange={handleImageUpload}
+                />
               </span>
             </DialogDescription>
             <DialogFooter>
@@ -90,10 +144,10 @@ const Bills = () => {
         <p className="text-gray-500">No bills found. Add one.</p>
       )}
     </>
-  )
-}
+  );
+};
 
-const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
+const BillList: React.FC<{ bill: Bill }> = ({ bill }) => {
   return (
     <li className="bg-white p-3 rounded-lg space-y-2 relative">
       <div>
@@ -101,22 +155,31 @@ const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
           <div>{bill.restaurant_name}</div>
           <div>RM {bill.financial_summary.total}</div>
         </div>
-        <div className="text-gray-500">{bill.date} | {bill.time}</div>
+        <div className="text-gray-500">
+          {bill.date} | {bill.time}
+        </div>
       </div>
-      <ul className="flex min-h-[28px]"> 
+      <ul className="flex min-h-[28px]">
         {bill.friends?.map((friend, index) => (
-          <FriendIcon key={friend.friend_id} friend={friend} className={`${index === 0 ? '' : 'ml-[-12px]' }`} />
+          <FriendIcon
+            key={friend.friend_id}
+            friend={friend}
+            className={`${index === 0 ? "" : "ml-[-12px]"}`}
+          />
         ))}
       </ul>
       <div className="absolute bottom-2 right-4">
-        <RadialProgressBar 
-          progress={Math.round((bill.financial_summary.total_paid / bill.financial_summary.total) * 100)}
+        <RadialProgressBar
+          progress={Math.round(
+            (bill.financial_summary.total_paid / bill.financial_summary.total) *
+              100
+          )}
           size={65}
           color="text-green-500"
         />
       </div>
     </li>
-  )
-}
+  );
+};
 
 export default Bills;

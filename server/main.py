@@ -48,10 +48,10 @@ def create_analysis_prompt() -> str:
 			}
 		],
 		"financial_summary": {
-			"subtotal": number,
-			"tax": number | null,
-			"service_charge": number | null,
-			"total": number,
+			"subtotal": number | 0,
+			"tax": number | 0,
+			"service_charge": number | 0,
+			"total": number | 0,
 			"total_paid": 0 // always zero for now
 		}"""
 
