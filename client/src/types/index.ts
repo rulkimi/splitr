@@ -4,7 +4,6 @@ export interface Item {
   quantity: number;
   unit_price: number;
   total_price: number;
-  assigned_to: number | null;
 }
 
 export interface Friend {
@@ -13,13 +12,7 @@ export interface Friend {
   photo: string | null;
   amount_owed: number;
   paid: boolean;
-  items: {
-    item_id: string;
-    name: string;
-    quantity: number;
-    unit_price: number;
-    total_price: number;
-  }[];
+  items: Item[]
 }
 
 export interface Bill {

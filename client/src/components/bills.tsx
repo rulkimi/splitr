@@ -2,11 +2,28 @@ import { type Bill } from "@/types";
 import RadialProgressBar from "@/components/radial-progress-bar";
 import FriendIcon from "@/components/friend-icon";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Bills = () => {
+  const [newBill, setNewBill] = useState<File | null>(null);
   const fetchBills = async (): Promise<Bill[]> => {
-    const res = await fetch("/data-structures/bills.json");
-    return res.json();
+    const { data, error } = await supabase.from('bills').select();
+    if (error) throw error;
+    return data ?? [];
   };
 
   const { data: bills } = useQuery({
@@ -14,17 +31,53 @@ const Bills = () => {
     queryFn: fetchBills,
   });
 
+  const billId = Math.floor(Math.random() * 2147483647);
+
+  const addBill = () => {
+    console.log("new bill uploaded", billId, newBill)
+  }
+  
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedBill = event.target.files?.[0] || null;
+    setNewBill(selectedBill);
+  }
+
   return (
     <>
       <div className="flex justify-between">
         <span className="font-semibold">Bills</span>
-        <span>+ Add Bill</span>
+        <Dialog>
+          <DialogTrigger>
+            + Add Bill
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Bill</DialogTitle>
+            </DialogHeader>
+            <DialogDescription>
+              <span className="block">
+                <Label htmlFor="new-bill-image">Upload a bill</Label>
+                <Input id="new-bill-image" type="file" onChange={handleImageUpload} />
+              </span>
+            </DialogDescription>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button onClick={addBill}>Add Bill</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-      <ul className="space-y-2">
-        {bills?.map((bill: Bill) => (
-          <BillList key={bill.bill_id} bill={bill} />
-        ))}
-      </ul>
+      {bills && bills.length > 0 ? (
+        <ul className="space-y-2">
+          {bills.map((bill: Bill) => (
+            <BillList key={bill.bill_id} bill={bill} />
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">No bills found. Add one.</p>
+      )}
     </>
   )
 }
