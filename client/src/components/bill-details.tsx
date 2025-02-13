@@ -69,7 +69,7 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
       <TableHeader>
         <TableRow>
           <TableHead>Item</TableHead>
-          <TableHead>Amount</TableHead>
+          <TableHead>Quantity</TableHead>
           <TableHead className="text-right">Price (RM)</TableHead>
         </TableRow>
       </TableHeader>
