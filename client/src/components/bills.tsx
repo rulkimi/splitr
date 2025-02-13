@@ -17,6 +17,7 @@ import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
 
 const Bills = () => {
   const [newBill, setNewBill] = useState<File | null>(null);
@@ -33,9 +34,19 @@ const Bills = () => {
 
   const billId = Math.floor(Math.random() * 2147483647);
 
-  const addBill = () => {
-    console.log("new bill uploaded", billId, newBill)
-  }
+  const addBill = async () => {
+    if (!newBill) return;
+    const formData = new FormData();
+    formData.append("file", newBill);
+    try {
+      const response = await axios.post("http://localhost:8000/analyze/", formData);
+      const billData = response.data;
+      const finalBillData = { ...billData, bill_id: billId };
+      await supabase.from('bills').insert(finalBillData);
+    } catch (error) {
+      console.error("Error adding bill:", error);
+    }
+  };
   
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedBill = event.target.files?.[0] || null;
@@ -92,8 +103,8 @@ const BillList: React.FC<{ bill: Bill}> = ({ bill }) => {
         </div>
         <div className="text-gray-500">{bill.date} | {bill.time}</div>
       </div>
-      <ul className="flex">
-        {bill.friends.map((friend, index) => (
+      <ul className="flex min-h-[28px]"> 
+        {bill.friends?.map((friend, index) => (
           <FriendIcon key={friend.friend_id} friend={friend} className={`${index === 0 ? '' : 'ml-[-12px]' }`} />
         ))}
       </ul>
