@@ -75,34 +75,36 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
               <div className="space-y-1">
                 <div>{item.name}</div>
                 <ul className="flex gap-[0.5px]">
-                  <Popover>
-                    <PopoverTrigger>
-                      <div
-                        className="bg-gray-100 w-6 h-6 flex items-center justify-center rounded-full aspect-square font-bold border-2 border-gray-400 border-dashed"
-                      >
-                        <Plus className="text-gray-500" />
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent side="top">
-                      <span className="flex gap-0.5">
-                        {bill.friends?.map((friend) => (
-                          <FriendIcon
-                            key={friend.friend_id}
-                            className={`list-none ${
-                              (itemFriends[item.item_id] || []).find(
-                                (f) => f.friend_id === friend.friend_id
-                              )
-                                ? "opacity-100"
-                                : "opacity-50"
-                            }`}
-                            size="lg"
-                            friend={friend}
-                            onClick={() => handleAddFriendToItem(friend, item.item_id)}
-                          />
-                        ))}
-                      </span>
-                    </PopoverContent>
-                  </Popover>
+                  <li>
+                    <Popover>
+                      <PopoverTrigger>
+                        <div
+                          className="bg-gray-100 w-6 h-6 flex items-center justify-center rounded-full aspect-square font-bold border-2 border-gray-400 border-dashed"
+                        >
+                          <Plus className="text-gray-500" />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent side="top">
+                        <span className="flex gap-0.5">
+                          {bill.friends?.map((friend) => (
+                            <FriendIcon
+                              key={friend.friend_id}
+                              className={`list-none ${
+                                (itemFriends[item.item_id] || []).find(
+                                  (f) => f.friend_id === friend.friend_id
+                                )
+                                  ? "opacity-100"
+                                  : "opacity-50"
+                              }`}
+                              size="lg"
+                              friend={friend}
+                              onClick={() => handleAddFriendToItem(friend, item.item_id)}
+                            />
+                          ))}
+                        </span>
+                      </PopoverContent>
+                    </Popover>
+                  </li>
                   {(itemFriends[item.item_id] || []).map((friend) => (
                     <FriendIcon key={friend.friend_id} friend={friend} size="sm" />
                   ))}
