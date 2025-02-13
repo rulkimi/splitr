@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
+const userId = localStorage.getItem('userId');
+
 const Friends = () => {
   const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -47,7 +49,8 @@ const Friends = () => {
     if (error) throw error;
     const { data: imageStore } = supabase.storage.from('images').getPublicUrl(`${friendId}-icon`);
     await supabase.from('friends').insert({
-      id: friendId,
+      user_id: userId,
+      friend_id: friendId,
       photo: imageStore.publicUrl,
       name: name
     });
@@ -106,7 +109,7 @@ const Friends = () => {
 
       <ul className="flex gap-0.5">
         {friends?.map(friend => (
-          <FriendIcon key={friend.id} size="lg" friend={friend} />
+          <FriendIcon key={friend.friend_id} size="lg" friend={friend} />
         ))}
       </ul>
     </div>

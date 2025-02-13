@@ -15,7 +15,7 @@ export interface Item {
 }
 
 export interface Friend {
-  id: number;
+  friend_id: number;
   name: string;
   photo: string | null;
   amount_owed: number;
@@ -30,7 +30,7 @@ export interface Friend {
 }
 
 export interface Bill {
-  id: string;
+  bill_id: string;
   restaurant_name: string;
   date: string;
   time: string;

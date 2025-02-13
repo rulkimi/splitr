@@ -9,6 +9,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      const userId = session?.user.id;
+      if (userId) localStorage.setItem('userId', userId);
       setIsAuthenticated(!!session)
       setLoading(false)
     }
