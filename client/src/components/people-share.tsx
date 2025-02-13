@@ -3,7 +3,7 @@ import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { useDrag } from "react-dnd";
-import { type Item as ItemProps, type Receipt } from "@/App";
+import { type Item as ItemProps, type Receipt } from "@/types";
 
 interface PersonShare {
   person_id: string;

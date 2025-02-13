@@ -1,5 +1,5 @@
 import FriendIcon from "@/components/friend-icon";
-import { type Friend } from "@/pages/home";
+import { type Friend } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";

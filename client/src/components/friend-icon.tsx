@@ -1,4 +1,4 @@
-import { type Friend } from "@/pages/home";
+import { type Friend } from "@/types";
 import {
   Tooltip,
   TooltipContent,

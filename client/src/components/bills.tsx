@@ -1,4 +1,4 @@
-import { type Bill } from "@/pages/home";
+import { type Bill } from "@/types";
 import RadialProgressBar from "@/components/radial-progress-bar";
 import FriendIcon from "@/components/friend-icon";
 import { useQuery } from "@tanstack/react-query";
