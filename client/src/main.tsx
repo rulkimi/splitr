@@ -7,9 +7,11 @@ import Home from '@/pages/home'
 import Auth from '@/pages/auth'
 import { lazy } from 'react'
 import { ProtectedRoute } from '@/components/protected-route'
+import BaseLayout from "@/layouts";
 
 const queryClient = new QueryClient()
-const Signup = lazy(() => import('@/pages/signup'))
+const Signup = lazy(() => import('@/pages/signup'));
+const Bill = lazy(() => import('@/pages/bill'));
 
 const router = createBrowserRouter([
   {
@@ -27,13 +29,23 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />
+  },
+  {
+    path: "/bill/:billId", // Added dynamic parameter
+    element: (
+      <ProtectedRoute>
+        <Bill />
+      </ProtectedRoute>
+    )
   }
 ])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <BaseLayout>
+        <RouterProvider router={router} />
+      </BaseLayout>
     </QueryClientProvider>
   </StrictMode>
 )

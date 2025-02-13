@@ -2,45 +2,43 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Receipt } from "@/App";
+import { type Bill } from "@/types";
 
-const BillDetails = ({ receipt }: { receipt: Receipt }) => {
+const BillDetails = ({ bill }: { bill: Bill }) => {
   return (
     <Card className="max-w-xl mx-auto">
       <CardHeader>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <h3 className="text-lg font-semibold">{receipt.metadata.restaurant_name}</h3>
-            <p className="text-sm text-muted-foreground">{receipt.metadata.date}</p>
+            <h3 className="text-lg font-semibold">{bill.restaurant_name}</h3>
+            <p className="text-sm text-muted-foreground">{bill.date}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold">Total: RM {receipt.financial_summary.total.toFixed(2)}</p>
+            <p className="text-lg font-semibold">Total: RM {bill.financial_summary.total.toFixed(2)}</p>
             <p className="text-sm text-muted-foreground">
-              {receipt.financial_summary.tax && `Tax: RM ${receipt.financial_summary.tax.toFixed(2)}`}
-              {receipt.financial_summary.service_charge && `Service Charge: RM ${receipt.financial_summary.service_charge.toFixed(2)}`}
+              {bill.financial_summary.tax && `Tax: RM ${bill.financial_summary.tax.toFixed(2)}`}
+              {bill.financial_summary.service_charge && `Service Charge: RM ${bill.financial_summary.service_charge.toFixed(2)}`}
             </p>
           </div>
         </div>
       </CardHeader>
 
       <CardContent>
-        <ItemsPurchased receipt={receipt} />
+        <ItemsPurchased bill={bill} />
       </CardContent>
     </Card>
   );
 };
 
-const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
+const ItemsPurchased = ({ bill }: { bill: Bill }) => {
   return (
     <Table>
-      {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
       <TableHeader>
         <TableRow>
           <TableHead>Item</TableHead>
@@ -49,8 +47,8 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {receipt.items.map((item, index) => (
-          <TableRow key={index}>
+        {bill.items.map((item) => (
+          <TableRow key={item.item_id}>
             <TableCell>{item.name}</TableCell>
             <TableCell>{item.quantity}</TableCell>
             <TableCell className="text-right">{item.total_price.toFixed(2)}</TableCell>
@@ -58,21 +56,21 @@ const ItemsPurchased = ({ receipt }: { receipt: Receipt }) => {
         ))}
       </TableBody>
       <TableFooter>
-        {receipt.financial_summary.tax && (
+        {bill.financial_summary.tax > 0 && (
           <TableRow>
             <TableCell colSpan={2}>Tax</TableCell>
-            <TableCell className="text-right">{receipt.financial_summary.tax.toFixed(2)}</TableCell>
+            <TableCell className="text-right">RM {bill.financial_summary.tax.toFixed(2)}</TableCell>
           </TableRow>
         )}
-        {receipt.financial_summary.service_charge && (
+        {bill.financial_summary.service_charge > 0 && (
           <TableRow>
-            <TableCell colSpan={2}>Service Charge</TableCell>
-            <TableCell className="text-right">{receipt.financial_summary.service_charge.toFixed(2)}</TableCell>
+            <TableCell>Service Charge</TableCell>
+            <TableCell colSpan={2} className="text-right">RM {bill.financial_summary.service_charge.toFixed(2)}</TableCell>
           </TableRow>
         )}
         <TableRow>
-          <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right">RM {receipt.financial_summary.subtotal.toFixed(2)}</TableCell>
+          <TableCell>Total</TableCell>
+          <TableCell colSpan={2} className="text-right">RM {bill.financial_summary.subtotal.toFixed(2)}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

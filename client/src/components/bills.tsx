@@ -18,10 +18,14 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Plus } from "lucide-react";
 
 const Bills = () => {
   const [newBill, setNewBill] = useState<File | null>(null);
   const [friendsInvolved, setFriendsInvolved] = useState<Friend[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate()
 
   const fetchBills = async (): Promise<Bill[]> => {
     const { data, error } = await supabase.from("bills").select();
@@ -51,6 +55,7 @@ const Bills = () => {
     if (!newBill) return;
     const formData = new FormData();
     formData.append("file", newBill);
+    setIsLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:8000/analyze/",
@@ -64,8 +69,11 @@ const Bills = () => {
         friends: friendsInvolved,
       };
       await supabase.from("bills").insert(finalBillData);
+      navigate(`/bill/${billId}`, { state: { billData: finalBillData } });
     } catch (error) {
       console.error("Error adding bill:", error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -86,6 +94,10 @@ const Bills = () => {
     }
     setFriendsInvolved(newFriendsInvolved);
   };
+
+  const handleBillClick = (bill: Bill) => {
+    navigate(`/bill/${bill.bill_id}`, { state: { billData: bill } });
+  }
 
   return (
     <>
@@ -129,7 +141,10 @@ const Bills = () => {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button onClick={addBill}>Add Bill</Button>
+              <Button onClick={addBill} disabled={isLoading}>
+                {isLoading ? <Loader2 className="animate-spin mr-2" /> : <Plus />}
+                "Add Bill"
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -137,7 +152,7 @@ const Bills = () => {
       {bills && bills.length > 0 ? (
         <ul className="space-y-2">
           {bills.map((bill: Bill) => (
-            <BillList key={bill.bill_id} bill={bill} />
+            <BillList key={bill.bill_id} bill={bill} onClick={() => handleBillClick(bill)} />
           ))}
         </ul>
       ) : (
@@ -147,9 +162,9 @@ const Bills = () => {
   );
 };
 
-const BillList: React.FC<{ bill: Bill }> = ({ bill }) => {
+const BillList: React.FC<{ bill: Bill, onClick: () => void }> = ({ bill, onClick }) => {
   return (
-    <li className="bg-white p-3 rounded-lg space-y-2 relative">
+    <li className="bg-white p-3 rounded-lg space-y-2 relative" onClick={onClick}>
       <div>
         <div className="flex justify-between gap-2 font-semibold">
           <div>{bill.restaurant_name}</div>
