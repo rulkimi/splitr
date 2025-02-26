@@ -68,9 +68,7 @@ const Friends = () => {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger>
-          <div
-            className="bg-gray-100 w-12 h-12 flex items-center justify-center rounded-full aspect-square font-bold border-2 border-gray-400 border-dashed"
-          >
+          <div className="bg-gray-100 w-12 h-12 flex items-center justify-center rounded-full aspect-square font-bold border-2 border-gray-400 border-dashed">
             <Plus className="text-gray-500" />
           </div>
         </DialogTrigger>
