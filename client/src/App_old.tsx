@@ -1,4 +1,4 @@
-import BillDetails from "@/components/bill-details";
+import BillDetails from "@/components/bill/bill-details";
 import BaseLayout from "@/layouts";
 import UploadReceipt from "@/components/upload-receipt";
 import PeopleShare from "@/components/people-share";
@@ -16,29 +16,29 @@ export interface Item {
 export interface Receipt {
   receipt_id: string;
   metadata: {
-    restaurant_name: string
-    date: string
-    time: string
-    receipt_number: string
-  }
-  items: Item[]
+    restaurant_name: string;
+    date: string;
+    time: string;
+    receipt_number: string;
+  };
+  items: Item[];
   financial_summary: {
-    subtotal: number
-    tax: number | null
-    total: number
-    service_charge: number | null
-  }
+    subtotal: number;
+    tax: number | null;
+    total: number;
+    service_charge: number | null;
+  };
   split_details: {
-    type: string
-    num_people: number
-    unassigned_items: Item[]
+    type: string;
+    num_people: number;
+    unassigned_items: Item[];
     shares: {
-      person_id: string
-      name: string
-      assigned_items: Item[]
-      share_amount: number
-    }[]
-  }
+      person_id: string;
+      name: string;
+      assigned_items: Item[];
+      share_amount: number;
+    }[];
+  };
 }
 
 export default function Home() {
@@ -83,14 +83,21 @@ export default function Home() {
               <BillDetails receipt={receipt} />
               <div className="flex justify-center gap-2">
                 <Button variant="secondary">Upload New Receipt</Button>
-                <Button onClick={() => setShowReceipt(false)}>Assign Items</Button>
+                <Button onClick={() => setShowReceipt(false)}>
+                  Assign Items
+                </Button>
               </div>
             </>
           ) : (
             <>
               <PeopleShare receipt={receipt} />
               <div className="flex justify-center gap-2">
-                <Button variant="secondary" onClick={() => setShowReceipt(true)}>Check Receipt</Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowReceipt(true)}
+                >
+                  Check Receipt
+                </Button>
                 <Button>Share</Button>
               </div>
             </>

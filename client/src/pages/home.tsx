@@ -1,5 +1,5 @@
 import Friends from "@/components/friends";
-import Bills from "@/components/bills";
+import Bills from "@/components/bill/bills";
 
 export default function Home() {
   return (
@@ -13,7 +13,4 @@ export default function Home() {
       </div>
     </div>
   );
-};
-
-
-
+}

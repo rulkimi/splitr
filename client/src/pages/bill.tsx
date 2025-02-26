@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { type Bill } from "@/types";
-import BillDetails from "@/components/bill-details";
+import BillDetails from "@/components/bill/bill-details";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
