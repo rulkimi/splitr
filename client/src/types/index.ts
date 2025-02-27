@@ -8,6 +8,7 @@ export interface Item {
 }
 
 export interface Friend {
+  bills?: string[]
   friend_id: number;
   name: string;
   photo: string | null;
