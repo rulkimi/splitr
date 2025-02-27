@@ -32,3 +32,15 @@ export interface Bill {
   items: Item[];
   friends: Friend[];
 }
+
+export interface SummaryItem {
+  itemName: string;
+  amountOwedForItem: string;
+}
+
+export interface FriendSummaryType {
+  name: string;
+  photo: string | null;
+  amountOwed: string;
+  items: SummaryItem[];
+}
