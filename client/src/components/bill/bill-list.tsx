@@ -1,6 +1,7 @@
 import FriendIcon from "../friend-icon";
 import RadialProgressBar from "../radial-progress-bar";
 import { type Bill } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 interface BillListProps {
   bill: Bill;
@@ -16,7 +17,7 @@ const BillList = ({ bill, onClick }: BillListProps) => {
       <div>
         <div className="flex justify-between gap-2 font-semibold">
           <div>{bill.restaurant_name}</div>
-          <div>RM {bill.financial_summary.total}</div>
+          <div>{formatCurrency(bill.financial_summary.total)}</div>
         </div>
         <div className="text-gray-500">
           {bill.date} | {bill.time}

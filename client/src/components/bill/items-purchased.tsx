@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase";
 // import { useNavigate } from "react-router-dom";
 import { type FriendSummaryType } from "@/types";
 import FriendSummary from "./friend-summary";
+import { formatCurrency } from "@/lib/utils";
 
 const ItemsPurchased = ({ bill }: { bill: Bill }) => {
   // const navigate = useNavigate();
@@ -90,14 +91,6 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
       console.log("Bill updated successfully!");
     }
 
-    // updatedBill.friends.forEach(friend => {
-    //   console.log(`${friend.name} owes RM ${friend.amount_owed.toFixed(2)}`);
-    //   friend.items.forEach(item => {
-    //     const amountOwedForItem = item.assigned_to?.find(f => f.friend_id === friend.friend_id)?.amount_owed || 0;
-    //     console.log(`  - For ${item.name}: RM ${amountOwedForItem.toFixed(2)}`);
-    //   })
-    // })
-
     const friendSummary = updatedBill.friends.map((friend) => ({
       name: friend.name,
       photo: friend.photo,
@@ -143,7 +136,7 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
                 </TableCell>
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell className="text-right">
-                  {item.total_price.toFixed(2)}
+                  {formatCurrency(item.total_price.toFixed(2)).replace("RM", "")}
                 </TableCell>
               </TableRow>
             ))}

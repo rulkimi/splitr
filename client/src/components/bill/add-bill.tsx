@@ -54,7 +54,8 @@ const AddBill = () => {
         bill_id: billId,
         friends: friendsInvolved,
       };
-      await supabase.from("bills").insert(finalBillData);
+      const suparesponse = await supabase.from("bills").insert(finalBillData);
+      console.log(suparesponse)
       navigate(`/bill/${billId}`, { state: { billData: finalBillData } });
     } catch (error) {
       console.error("Error adding bill:", error);

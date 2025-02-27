@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { type Bill } from "@/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ItemsPurchased from "@/components/bill/items-purchased";
+import { formatCurrency } from "@/lib/utils";
 
 const Bill = () => {
   const location = useLocation();
@@ -22,15 +23,13 @@ const Bill = () => {
             </div>
             <div className="text-right">
               <p className="text-lg font-semibold">
-                Total: RM {bill.financial_summary.total.toFixed(2)}
+                Total: {formatCurrency(bill.financial_summary.total.toFixed(2))}
               </p>
               <p className="text-sm text-muted-foreground">
                 {bill.financial_summary.tax > 0 &&
-                  `Tax: RM ${bill.financial_summary.tax.toFixed(2)}`}
+                  `Tax: ${formatCurrency(bill.financial_summary.tax.toFixed(2))}`}
                 {bill.financial_summary.service_charge > 0 &&
-                  `Service Charge: RM ${bill.financial_summary.service_charge.toFixed(
-                    2
-                  )}`}
+                  `Service Charge: ${formatCurrency(bill.financial_summary.service_charge.toFixed(2))}`}
               </p>
             </div>
           </div>

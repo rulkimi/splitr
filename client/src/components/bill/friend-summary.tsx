@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/lib/utils";
 
 const FriendSummary = ({ friendSummary }: { friendSummary: FriendSummaryType[] }) => {
   return (
@@ -28,7 +29,7 @@ const FriendSummary = ({ friendSummary }: { friendSummary: FriendSummaryType[] }
                 </div>
               </TableHead>
               <TableHead className="text-end">
-                <span className="font-bold text-black">RM {friend.amountOwed}</span>
+                <span className="font-bold text-black">{formatCurrency(friend.amountOwed)}</span>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -37,16 +38,10 @@ const FriendSummary = ({ friendSummary }: { friendSummary: FriendSummaryType[] }
               <TableRow key={item.itemName}>
                 <TableCell>{item.itemName}</TableCell>
                 <TableCell className="text-right">
-                  RM {item.amountOwedForItem}
+                  {formatCurrency(item.amountOwedForItem)}
                 </TableCell>
               </TableRow>
             ))}
-            {/* <TableRow>
-              <TableCell>Total</TableCell>
-              <TableCell className="text-right font-medium">
-                RM {friend.amountOwed}
-              </TableCell>
-            </TableRow> */}
           </TableBody>
         </Table>
       ))}
