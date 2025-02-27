@@ -36,24 +36,54 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
   };
 
   const handleProceed = async () => {
+    const updatedItems = bill.items.map((item) => {
+      const assignedFriends = itemFriends[item.item_id] || [];
+      const pricePerPerson = assignedFriends.length > 0 ? item.total_price / assignedFriends.length : item.total_price;
+
+      const updatedAssignedTo = assignedFriends.map((friend) => ({
+        ...friend,
+        amount_owed: friend.amount_owed === undefined ? pricePerPerson : friend.amount_owed + pricePerPerson,
+      }));
+
+      return {
+        ...item,
+        assigned_to: updatedAssignedTo,
+      };
+    });
+
     const updatedBill = {
       ...bill,
-      items: bill.items.map(item => ({
-        ...item,
-        assigned_to: itemFriends[item.item_id] || []
-      }))
+      items: updatedItems,
+      friends: bill.friends.map((friend) => {
+        const friendItems = updatedItems.filter((item) =>
+          item.assigned_to?.find((f) => f.friend_id === friend.friend_id)
+        );
+        const totalAmountOwed = friendItems.reduce((sum, item) => {
+          const friendItem = item.assigned_to?.find((f) => f.friend_id === friend.friend_id);
+          return sum + (friendItem?.amount_owed || 0);
+        }, 0);
+        return { ...friend, amount_owed: totalAmountOwed, items: friendItems };
+      }),
     };
 
     const { error } = await supabase
       .from("bills")
-      .update({ items: updatedBill.items })
+      .update({ items: updatedBill.items, friends: updatedBill.friends })
       .eq("bill_id", bill.bill_id);
     if (error) {
       console.error("Error updating bill:", error);
     } else {
       console.log("Bill updated successfully!");
     }
-  }
+
+    updatedBill.friends.forEach(friend => {
+      console.log(`${friend.name} owes RM ${friend.amount_owed.toFixed(2)}`);
+      friend.items.forEach(item => {
+        const amountOwedForItem = item.assigned_to?.find(f => f.friend_id === friend.friend_id)?.amount_owed || 0;
+        console.log(`  - For ${item.name}: RM ${amountOwedForItem.toFixed(2)}`);
+      })
+    })
+  };
 
   return (
     <div>
