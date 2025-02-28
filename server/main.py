@@ -53,7 +53,10 @@ def create_analysis_prompt() -> str:
 			"service_charge": number | 0,
 			"total": number | 0,
 			"total_paid": 0 // always zero for now
-		}"""
+		}
+	}
+	Ensure that each item has a unique item_id.  Do not reuse IDs for different items, even if they have the same name. Generate unique IDs for each item.
+	"""
 
 	item_detection_rules = """
 	
@@ -84,6 +87,9 @@ def create_analysis_prompt() -> str:
 	     * Preparation modifiers (thin, crispy, etc.)
 	     * Add-ons or extras
 	"""
+
+	return base_prompt + item_detection_rules
+
 
 	return base_prompt + item_detection_rules
 

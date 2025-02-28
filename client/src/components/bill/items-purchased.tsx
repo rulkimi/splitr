@@ -45,7 +45,7 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
   const handleProceed = async () => {
     const updatedItems = bill.items.map((item) => {
       const assignedFriends = itemFriends[item.item_id] || [];
-      const pricePerPerson =
+      const basePricePerPerson =
         assignedFriends.length > 0
           ? item.total_price / assignedFriends.length
           : item.total_price;
@@ -54,8 +54,8 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
         ...friend,
         amount_owed:
           friend.amount_owed === undefined
-            ? pricePerPerson
-            : friend.amount_owed + pricePerPerson,
+            ? basePricePerPerson
+            : friend.amount_owed + basePricePerPerson,
       }));
 
       return {
@@ -63,6 +63,11 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
         assigned_to: updatedAssignedTo,
       };
     });
+
+    const numFriends = bill.friends.length;
+    const taxPerPerson = numFriends > 0 ? bill.financial_summary.tax / numFriends : bill.financial_summary.tax;
+    const serviceChargePerPerson = numFriends > 0 ? bill.financial_summary.service_charge / numFriends : bill.financial_summary.service_charge;
+
 
     const updatedBill = {
       ...bill,
@@ -76,7 +81,7 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
             (f) => f.friend_id === friend.friend_id
           );
           return sum + (friendItem?.amount_owed || 0);
-        }, 0);
+        }, 0) + taxPerPerson + serviceChargePerPerson;
         return { ...friend, amount_owed: totalAmountOwed, items: friendItems };
       }),
     };
