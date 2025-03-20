@@ -31,9 +31,9 @@ const Bills = () => {
       </div>
       {bills && bills.length > 0 ? (
         <ul className="space-y-2">
-          {bills.map((bill: Bill) => (
+          {bills.map((bill: Bill, index) => (
             <BillList
-              key={bill.bill_id}
+              key={`${bill.bill_id}-${index}`}
               bill={bill}
               onClick={() => handleBillClick(bill)}
             />

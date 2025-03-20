@@ -126,8 +126,8 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {bill.items.map((item) => (
-              <TableRow key={item.item_id}>
+            {bill.items.map((item, index) => (
+              <TableRow key={`${item.item_id}-${index}`}>
                 <TableCell>
                   <div className="space-y-1">
                     <div>{item.name}</div>
