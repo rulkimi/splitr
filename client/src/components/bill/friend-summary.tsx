@@ -13,7 +13,7 @@ const FriendSummary = ({ friendSummary }: { friendSummary: FriendSummaryType[] }
   return (
     <div className="space-y-4">
       {friendSummary.map((friend) => (
-        <Table key={friend.name}>
+        <Table key={friend.id}>
           <TableHeader>
             <TableRow>
               <TableHead>
@@ -35,7 +35,7 @@ const FriendSummary = ({ friendSummary }: { friendSummary: FriendSummaryType[] }
           </TableHeader>
           <TableBody>
             {friend.items.map((item) => (
-              <TableRow key={item.itemName}>
+              <TableRow key={item.itemId}>
                 <TableCell>{item.itemName}</TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(item.amountOwedForItem)}

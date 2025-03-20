@@ -97,10 +97,12 @@ const ItemsPurchased = ({ bill }: { bill: Bill }) => {
     }
 
     const friendSummary = updatedBill.friends.map((friend) => ({
+      id: friend.friend_id,
       name: friend.name,
       photo: friend.photo,
       amountOwed: friend.amount_owed.toFixed(2),
       items: friend.items.map((item) => ({
+        itemId: item.item_id,
         itemName: item.name,
         amountOwedForItem: (
           item.assigned_to?.find((f) => f.friend_id === friend.friend_id)

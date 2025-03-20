@@ -34,11 +34,13 @@ export interface Bill {
 }
 
 export interface SummaryItem {
+  itemId: string | number;
   itemName: string;
   amountOwedForItem: string;
 }
 
 export interface FriendSummaryType {
+  id: string | number;
   name: string;
   photo: string | null;
   amountOwed: string;
