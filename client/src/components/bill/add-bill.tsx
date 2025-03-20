@@ -90,7 +90,7 @@ const AddBill = () => {
           <DialogTitle>Add Bill</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          <span className="flex gap-0.5">
+          <span className="flex gap-0.5" tabIndex={0}>
             {friends?.map((friend) => (
               <FriendIcon
                 className={`list-none ${

@@ -20,7 +20,7 @@ export const FriendSelector = ({ itemId, friends, selectedFriends, onFriendSelec
           </div>
         </PopoverTrigger>
         <PopoverContent side="top">
-          <span className="flex gap-0.5">
+          <span className="flex gap-0.5" tabIndex={0}>
             {friends?.map((friend) => (
               <FriendIcon
                 key={friend.friend_id}
